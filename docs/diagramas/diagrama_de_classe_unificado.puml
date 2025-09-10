@@ -1,0 +1,97 @@
+@startuml DiagramaDeClasseUnificado
+'skinparam linetype ortho
+
+class Usuario {
+  +UUID id
+  +String nome
+  +String email
+  +String senha
+}
+
+class Cliente extends Usuario {
+  +String telefone
+}
+
+class Administrador extends Usuario {
+}
+
+class Entregador extends Usuario {
+  +String placaVeiculo
+}
+
+class Cupcake {
+  +UUID id
+  +String sabor
+  +Decimal preco
+  +String urlImagem
+}
+
+class Carrinho {
+  +UUID id
+  +DateTime criadoEm
+}
+
+class ItemCarrinho {
+  +Int quantidade
+  +Decimal subtotal
+}
+
+class Pedido {
+  +UUID id
+  +DateTime dataHora
+  +Decimal total
+  +String status
+}
+
+class PedidoItem {
+  +Int quantidade
+  +Decimal subtotal
+}
+
+class EnderecoEntrega {
+  +UUID id
+  +String cep
+  +String rua
+  +String numero
+  +String complemento
+}
+
+class Pagamento {
+  +UUID id
+  +String metodo
+  +String status
+  +String transacaoId
+}
+
+class ProvaEntrega {
+  +UUID id
+  +String fotoUrl
+  +DateTime dataHora
+}
+
+class Notificacao {
+    +UUID id
+    +String tipo
+    +String destino
+    +String mensagem
+}
+
+' Relacionamentos
+Cliente "1" -- "1" Carrinho
+Cliente "1" -- "*" Pedido
+Cliente "1" -- "*" EnderecoEntrega
+
+Carrinho "1" -- "*" ItemCarrinho
+ItemCarrinho "*" -- "1" Cupcake
+
+Pedido "1" -- "*" PedidoItem
+PedidoItem "*" -- "1" Cupcake
+Pedido "1" -- "1" EnderecoEntrega
+Pedido "1" -- "1" Pagamento
+Pedido "1" -- "0..1" ProvaEntrega
+Pedido "*" -- "1" Entregador : atribuído
+Pedido "1" -- "*" Notificacao : gera
+
+Administrador "1" -- "*" Pedido : gerencia
+
+@enduml

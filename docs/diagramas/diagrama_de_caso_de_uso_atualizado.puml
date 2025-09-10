@@ -1,0 +1,62 @@
+@startuml DiagramaDeCasoDeUsoAtualizado
+left to right direction
+
+actor Cliente
+actor Administrador
+actor Entregador
+
+rectangle "Sistema de Cupcakes" {
+  usecase "Fazer Login" as UC_Login
+  usecase "Cadastrar Conta" as UC_Cadastro
+  usecase "Recuperar Senha" as UC_RecuperarSenha
+
+  usecase "Visualizar Cardápio" as UC_VerCardapio
+  usecase "Visualizar Detalhes do Produto" as UC_VerDetalhes
+  
+  usecase "Adicionar Item ao Carrinho" as UC_AddItem
+  usecase "Remover Item do Carrinho" as UC_RemoveItem
+  usecase "Visualizar Carrinho" as UC_VerCarrinho
+  
+  usecase "Realizar Checkout" as UC_Checkout
+  usecase "Acompanhar Pedido" as UC_Acompanhar
+  
+  usecase "Adicionar Produto" as UC_AddProduto
+  usecase "Editar Produto" as UC_EditProduto
+  usecase "Remover Produto" as UC_RemoveProduto
+  
+  usecase "Atribuir Pedidos" as UC_AtribuirPedidos
+  usecase "Visualizar Relatórios" as UC_VerRelatorios
+  
+  usecase "Atualizar Status de Entrega" as UC_AtualizarStatus
+
+  ' Generalizações para Gerenciar
+  usecase "Gerenciar Carrinho" as UC_GerenciarCarrinho
+  UC_GerenciarCarrinho <|.. UC_AddItem
+  UC_GerenciarCarrinho <|.. UC_RemoveItem
+  UC_GerenciarCarrinho <|.. UC_VerCarrinho
+
+  usecase "Gerenciar Catálogo" as UC_GerenciarCatalogo
+  UC_GerenciarCatalogo <|.. UC_AddProduto
+  UC_GerenciarCatalogo <|.. UC_EditProduto
+  UC_GerenciarCatalogo <|.. UC_RemoveProduto
+
+  ' Relacionamentos Cliente
+  Cliente -- UC_Login
+  Cliente -- UC_Cadastro
+  Cliente -- UC_RecuperarSenha
+  Cliente -- UC_VerCardapio
+  Cliente -- UC_VerDetalhes
+  Cliente -- UC_GerenciarCarrinho
+  Cliente -- UC_Checkout
+  Cliente -- UC_Acompanhar
+
+  ' Relacionamentos Administrador
+  Administrador -- UC_GerenciarCatalogo
+  Administrador -- UC_AtribuirPedidos
+  Administrador -- UC_VerRelatorios
+  
+  ' Relacionamentos Entregador
+  Entregador -- UC_AtualizarStatus
+
+}
+@enduml
