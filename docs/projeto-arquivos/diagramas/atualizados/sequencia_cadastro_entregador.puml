@@ -1,0 +1,39 @@
+@startuml
+
+actor "Entregador" as delivery
+participant "Frontend" as front
+participant "Backend" as back
+database "Banco de Dados" as db
+actor "Administrador" as admin
+
+delivery -> front : Acessa página de cadastro
+front -> delivery : Exibe formulário de cadastro
+
+delivery -> front : Preenche dados básicos
+delivery -> front : Upload de documentos
+front -> back : POST /api/delivery/signup
+back -> db : Valida email único
+db -> back : Resultado validação
+
+alt Email já existe
+    back -> front : 400 Bad Request
+    front -> delivery : Mostra erro de email duplicado
+else Email único
+    back -> db : Salva dados básicos
+    back -> db : Armazena documentos
+    back -> db : Status = "Pendente"
+    back -> front : 201 Created
+    front -> delivery : Confirmação e instruções
+end
+
+admin -> back : GET /api/admin/pending-drivers
+back -> db : Busca cadastros pendentes
+db -> back : Lista de cadastros
+back -> admin : Exibe lista e documentos
+
+admin -> back : POST /api/admin/approve-driver/{id}
+back -> db : Atualiza status
+back -> delivery : Envia email de aprovação
+back -> front : Atualiza interface
+
+@enduml

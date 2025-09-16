@@ -1,0 +1,105 @@
+@startuml notificacoes_diagrama_classe
+title Diagrama de Classes - Sistema de Notificações
+
+class User {
+  +ID: uint
+  +email: string
+  +name: string
+  +type: UserType
+  +password: string
+  +vehicle?: string
+  +CreatedAt: time.Time
+  +UpdatedAt: time.Time
+}
+
+class Order {
+  +ID: uint
+  +CustomerID: uint
+  +DeliveryID?: uint
+  +Status: OrderStatus
+  +Total: float64
+  +CreatedAt: time.Time
+  +UpdatedAt: time.Time
+  +Items: []OrderItem
+}
+
+class Notification {
+  +ID: uint
+  +UserID: uint
+  +OrderID?: uint
+  +Type: string
+  +Title: string
+  +Message: string
+  +IsRead: boolean
+  +CreatedAt: time.Time
+  +UpdatedAt: time.Time
+}
+
+class NotificationService {
+  -db: *gorm.DB
+  +CreateNotification(data: CreateNotificationData): (*Notification, error)
+  +GetUserNotifications(userID: uint, limit: int): ([]Notification, error)
+  +MarkAsRead(notificationID: uint, userID: uint): error
+  +MarkAllAsRead(userID: uint): error
+  +GetUnreadCount(userID: uint): (int64, error)
+  +NotifyOrderStatusChange(order: *Order, newStatus: string): error
+}
+
+class NotificationHandler {
+  -notificationService: *NotificationService
+  +GetNotifications(c: *gin.Context)
+  +GetUnreadCount(c: *gin.Context)
+  +MarkAsRead(c: *gin.Context)
+  +MarkAllAsRead(c: *gin.Context)
+  +CreateTestNotification(c: *gin.Context)
+}
+
+class CreateNotificationData {
+  +UserID: uint
+  +OrderID?: uint
+  +Type: string
+  +Title: string
+  +Message: string
+}
+
+enum NotificationType {
+  ORDER_CONFIRMED
+  ORDER_PREPARING
+  ORDER_READY
+  ORDER_DELIVERING
+  ORDER_DELIVERED
+  ORDER_CANCELLED
+  TEST
+}
+
+' Relacionamentos
+User ||--o{ Notification : "recebe"
+Order ||--o{ Notification : "gera"
+NotificationService --> Notification : "gerencia"
+NotificationHandler --> NotificationService : "usa"
+NotificationService --> CreateNotificationData : "usa"
+Notification --> NotificationType : "tem tipo"
+
+' Notas
+note right of NotificationService::NotifyOrderStatusChange
+  Método responsável por disparar 
+  notificações automáticas quando
+  o status de um pedido muda.
+  
+  Notifica:
+  - Cliente (sempre)
+  - Admin (alguns casos)
+  - Entregadores (pedidos prontos)
+end note
+
+note right of Notification
+  Tabela de notificações:
+  - user_id: FK para User
+  - order_id: FK para Order (opcional)
+  - type: tipo da notificação
+  - title: título da notificação
+  - message: mensagem completa
+  - is_read: status de leitura
+end note
+
+@enduml

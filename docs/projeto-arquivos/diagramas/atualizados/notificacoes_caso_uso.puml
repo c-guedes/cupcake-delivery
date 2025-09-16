@@ -1,0 +1,63 @@
+@startuml notificacoes_caso_uso
+title Sistema de Notificações - Cupcake Delivery
+
+actor Cliente as client
+actor Entregador as delivery  
+actor Administrador as admin
+
+package "Sistema de Notificações" {
+  usecase "Receber Notificação de Status do Pedido" as UC1
+  usecase "Visualizar Notificações" as UC2
+  usecase "Marcar Notificação como Lida" as UC3
+  usecase "Marcar Todas como Lidas" as UC4
+  usecase "Ver Contador de Não Lidas" as UC5
+  usecase "Gerar Notificação Automática" as UC6
+  usecase "Criar Notificação de Teste" as UC7
+}
+
+' Relacionamentos Cliente
+client --> UC1 : recebe
+client --> UC2 : visualiza
+client --> UC3 : marca
+client --> UC4 : marca todas
+client --> UC5 : verifica
+
+' Relacionamentos Entregador  
+delivery --> UC1 : recebe
+delivery --> UC2 : visualiza
+delivery --> UC3 : marca
+delivery --> UC4 : marca todas
+delivery --> UC5 : verifica
+
+' Relacionamentos Administrador
+admin --> UC1 : recebe
+admin --> UC2 : visualiza
+admin --> UC3 : marca
+admin --> UC4 : marca todas
+admin --> UC5 : verifica
+admin --> UC7 : cria teste
+
+' Sistema gera automaticamente
+UC6 --> UC1 : <<include>>
+
+note right of UC6
+  Disparada automaticamente quando:
+  - Status do pedido muda
+  - Pedido é confirmado
+  - Pedido está pronto
+  - Pedido saiu para entrega
+  - Pedido foi entregue
+  - Pedido foi cancelado
+end note
+
+note right of UC1
+  Tipos de notificação:
+  - order_confirmed
+  - order_preparing  
+  - order_ready
+  - order_delivering
+  - order_delivered
+  - order_cancelled
+end note
+
+@enduml

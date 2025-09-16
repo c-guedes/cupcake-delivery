@@ -1,0 +1,105 @@
+@startuml notificacoes_sequencia_interacao
+title Fluxo de Interação com Notificações - Frontend
+
+actor Usuario as user
+participant React as frontend
+participant NotificationDropdown as dropdown
+participant useNotifications as hook
+participant NotificationService as service
+participant Backend as api
+
+== Carregamento Inicial ==
+
+user -> frontend : acessa dashboard
+frontend -> hook : useNotifications()
+activate hook
+
+hook -> hook : verificar autenticação
+alt usuário autenticado
+    hook -> service : getNotifications()
+    activate service
+    service -> api : GET /notifications
+    api -> service : lista de notificações
+    service -> hook : notificações
+    deactivate service
+    
+    hook -> service : getUnreadCount()
+    activate service
+    service -> api : GET /notifications/unread-count
+    api -> service : contador
+    service -> hook : unreadCount
+    deactivate service
+end
+
+hook -> dropdown : atualizar estado
+dropdown -> frontend : renderizar badge
+
+== Interação com Notificações ==
+
+user -> dropdown : clica no ícone de sino
+dropdown -> dropdown : abrir dropdown
+
+user -> dropdown : visualiza notificações
+dropdown -> dropdown : exibir lista
+
+user -> dropdown : clica em notificação
+dropdown -> hook : markAsRead(notificationId)
+hook -> service : markAsRead(notificationId)
+activate service
+service -> api : PUT /notifications/:id/read
+api -> service : sucesso
+service -> hook : atualizado
+deactivate service
+
+hook -> hook : atualizar estado local
+hook -> dropdown : notificação marcada como lida
+dropdown -> dropdown : atualizar UI
+
+== Marcar Todas como Lidas ==
+
+user -> dropdown : clica "Marcar todas como lidas"
+dropdown -> hook : markAllAsRead()
+hook -> service : markAllAsRead()
+activate service
+service -> api : PUT /notifications/mark-all-read
+api -> service : sucesso
+service -> hook : todas marcadas
+deactivate service
+
+hook -> hook : limpar contador
+hook -> dropdown : contador = 0
+dropdown -> dropdown : remover badge
+
+== Polling Automático ==
+
+loop a cada 30 segundos
+    hook -> service : getUnreadCount()
+    activate service
+    service -> api : GET /notifications/unread-count
+    api -> service : contador atualizado
+    service -> hook : novo contador
+    deactivate service
+    
+    hook -> dropdown : atualizar badge
+    dropdown -> frontend : mostrar novas notificações
+end
+
+deactivate hook
+
+note right of hook
+  Hook gerencia:
+  - Estado das notificações
+  - Contadores não lidas
+  - Polling automático
+  - Sincronização com backend
+end note
+
+note right of dropdown
+  Componente responsável por:
+  - UI do sino e badge
+  - Lista de notificações
+  - Interações do usuário
+  - Indicadores visuais
+end note
+
+@enduml

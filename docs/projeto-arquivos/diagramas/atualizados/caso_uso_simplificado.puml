@@ -1,0 +1,45 @@
+@startuml diagrama_caso_uso_simplificado
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Cliente" as customer
+actor "Entregador" as delivery
+actor "Administrador" as admin
+
+rectangle "Sistema de Delivery" {
+  ' Casos de uso básicos
+  usecase "Fazer Login" as UC1
+  usecase "Cadastrar Conta" as UC2
+  
+  ' Casos de uso do Cliente
+  usecase "Fazer Pedido" as UC3
+  usecase "Ver Status do Pedido" as UC4
+  usecase "Gerenciar Carrinho" as UC5
+
+  ' Casos de uso do Entregador
+  usecase "Ver Entregas Disponíveis" as UC6
+  usecase "Atualizar Status Entrega" as UC7
+
+  ' Casos de uso do Admin
+  usecase "Gerenciar Produtos" as UC8
+  usecase "Ver Relatório de Pedidos" as UC9
+
+  ' Relacionamentos
+  customer --> UC1
+  customer --> UC2
+  customer --> UC3
+  customer --> UC4
+  customer --> UC5
+
+  delivery --> UC1
+  delivery --> UC2
+  delivery --> UC6
+  delivery --> UC7
+
+  admin --> UC1
+  admin --> UC8
+  admin --> UC9
+}
+
+@enduml

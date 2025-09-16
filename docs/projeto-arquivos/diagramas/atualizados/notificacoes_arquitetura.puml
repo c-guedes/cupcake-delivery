@@ -1,0 +1,91 @@
+@startuml notificacoes_arquitetura
+title Arquitetura do Sistema de Notificações
+
+package "Frontend (React)" {
+  component "NotificationDropdown" as dropdown
+  component "BellIcon" as bell
+  component "useNotifications Hook" as hook
+  component "NotificationService" as frontService
+  component "Toast System" as toast
+}
+
+package "Backend (Go/Gin)" {
+  component "NotificationHandler" as handler
+  component "NotificationService" as backService
+  component "OrderHandler" as orderHandler
+  component "Auth Middleware" as auth
+}
+
+package "Database (PostgreSQL)" {
+  component "notifications table" as notifTable
+  component "users table" as userTable
+  component "orders table" as orderTable
+}
+
+package "External Triggers" {
+  component "Admin Actions" as admin
+  component "Order Status Updates" as statusUpdate
+}
+
+' Frontend Internal Flow
+dropdown --> bell : renders
+dropdown --> hook : uses
+hook --> frontService : calls
+hook --> toast : shows feedback
+
+' Frontend to Backend
+frontService --> auth : authenticated requests
+auth --> handler : validates & forwards
+handler --> backService : business logic
+backService --> notifTable : CRUD operations
+
+' Automatic Notifications Flow
+admin --> orderHandler : updates order status
+orderHandler --> statusUpdate : triggers
+statusUpdate --> backService : NotifyOrderStatusChange()
+backService --> notifTable : creates notifications
+backService --> userTable : finds recipients
+backService --> orderTable : gets order details
+
+' Database Relationships
+notifTable --> userTable : user_id FK
+notifTable --> orderTable : order_id FK
+
+' Polling Flow
+hook --> frontService : polling every 30s
+frontService --> handler : GET /notifications
+handler --> notifTable : query new notifications
+notifTable --> handler : results
+handler --> frontService : JSON response
+frontService --> hook : updates state
+hook --> dropdown : renders updates
+
+note right of backService
+  Responsabilidades:
+  - Criar notificações automáticas
+  - Gerenciar status de leitura  
+  - Filtrar por usuário
+  - Contar não lidas
+  - Mensagens personalizadas
+end note
+
+note right of hook
+  Responsabilidades:
+  - Estado das notificações
+  - Polling automático
+  - Cache local
+  - Sincronização
+  - Error handling
+end note
+
+note bottom of notifTable
+  Campos principais:
+  - user_id (FK)
+  - order_id (FK, opcional)
+  - type (enum)
+  - title, message
+  - is_read (boolean)
+  - timestamps
+end note
+
+@enduml

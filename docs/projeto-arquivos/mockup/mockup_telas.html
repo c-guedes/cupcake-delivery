@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Wireframes App Cupcakes</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .screen-wrapper {
+      margin-bottom: 40px;
+    }
+    .screen {
+      width: 375px;
+      height: 812px;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: #ff6f61;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .header h1 {
+      flex: 1;
+      margin: 0;
+      font-size: 18px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .header .back {
+      font-size: 20px;
+      color: #ffffff;
+      cursor: pointer;
+    }
+    .header .icon {
+      width: 24px;
+      height: 24px;
+      margin-left: 12px;
+      cursor: pointer;
+    }
+    .content {
+      flex: 1;
+      padding: 16px;
+      overflow: hidden;
+    }
+    .footer {
+      padding: 12px;
+      background: #f1f1f1;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+    .input {
+      width: calc(100% - 32px);
+      padding: 12px;
+      margin: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      box-sizing: border-box;
+      background: #f9f9f9;
+    }
+    .btn-container {
+      padding: 16px 24px;
+      background: #ffffff;
+    }
+    .btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 12px auto;
+      padding: 14px 12px;
+      background: #ff6f61;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .btn:hover {
+      background: #e65a50;
+    }
+    .link-small {
+      font-size: 12px;
+      color: #007bff;
+      text-decoration: none;
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+    }
+    .link-small:hover {
+      text-decoration: underline;
+    }
+    .card {
+      width: calc(100% - 32px);
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Increased shadow for more emphasis */
+      padding: 12px;
+      margin: 12px auto;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      flex-wrap: wrap;
+      border: 0.5px solid #000; /* Added black border */
+    }
+    .card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 12px;
+    }
+    .placeholder-img {
+      width: 100%;
+      height: 180px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .caption {
+      font-style: italic;
+      font-size: 12px;
+      color: #555;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .annotation {
+      font-size: 12px;
+      color: #444;
+      margin: 8px 0 16px;
+      padding: 0 12px;
+    }
+    h3, h4 {
+      color: #333;
+    }
+    p {
+      color: #555;
+    }
+
+    @media print {
+    html {-webkit-print-color-adjust: exact; color-adjust: exact;}
+    .screen-wrapper {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      break-after: avoid;
+    }
+    .screen {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      break-after: avoid;
+      }
+    .screen-wrapper:first-child {page-break-before: avoid;}
+    .screen-wrapper:last-child {page-break-before: avoid;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Login -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Login</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <input class="input" placeholder="Email" />
+        <input class="input" type="password" placeholder="Senha" />
+      </div>
+      <div class="btn-container">
+        <a class="btn">Entrar</a>
+        <a class="btn">Criar Conta</a>
+        <a class="link-small">Esqueci minha senha?</a>
+      </div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 1: Tela de Login.</div>
+    <div class="annotation">Inputs destacados e navegação clara.</div>
+  </div>
+
+  <!-- 2. Recuperar Senha -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Recuperar Senha</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <input class="input" placeholder="Digite seu email" />
+        <p style="font-size:12px;color:#666;margin:12px auto;width:90%;">Link será enviado para recuperação.</p>
+      </div>
+      <div class="btn-container"><a class="btn">Enviar Link</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 2: Recuperação de Senha.</div>
+    <div class="annotation">Feedback reduz erros.</div>
+  </div>
+
+  <!-- 3. Cadastro -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Cadastro</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <input class="input" placeholder="Nome Completo" />
+        <input class="input" placeholder="Email" />
+        <input class="input" placeholder="Telefone (opcional)" />
+        <input class="input" placeholder="Senha" />
+        <input class="input" placeholder="Confirmar Senha" />
+      </div>
+      <div class="btn-container"><a class="btn">Registrar</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 3: Cadastro de Usuário.</div>
+    <div class="annotation">Campos em ordem lógica.</div>
+  </div>
+
+  <!-- 4. Catálogo -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Catálogo</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <input class="input" placeholder="Buscar sabores" />
+        <div class="card"><img src="https://via.placeholder.com/60"/><div><strong>Chocolate</strong><br/>R$5,00</div></div>
+        <div class="card"><img src="https://via.placeholder.com/60"/><div><strong>Baunilha</strong><br/>R$4,50</div></div>
+      </div>
+      <div class="btn-container"><a class="btn">Ver Mais</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 4: Listagem de produtos.</div>
+    <div class="annotation">Cards com sombra.</div>
+  </div>
+
+  <!-- 5. Detalhes do Cupcake -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Detalhes</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <div class="placeholder-img"></div>
+        <h3>Chocolate c/ Granulado</h3>
+        <p>Ingredientes: chocolate, farinha, ovo…</p>
+        <p><strong>R$ 5,00</strong></p>
+        <input class="input" type="number" value="1" />
+      </div>
+      <div class="btn-container"><a class="btn">Adicionar ao Carrinho</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 5: Página de detalhes.</div>
+    <div class="annotation">Quantidade ajustável.</div>
+  </div>
+
+  <!-- 6. Carrinho -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Carrinho</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <div class="card"><img src="https://via.placeholder.com/60"/><div>Chocolate ×2<br/><strong>R$10,00</strong></div></div>
+        <div class="card"><img src="https://via.placeholder.com/60"/><div>Baunilha ×1<br/><strong>R$4,50</strong></div></div>
+        <p><strong>Total: R$14,50</strong></p>
+      </div>
+      <div class="btn-container"><a class="btn">Finalizar Compra</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 6: Carrinho de Compras.</div>
+    <div class="annotation">Confirmação de itens e total.</div>
+  </div>
+
+  <!-- 7. Checkout -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Checkout</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <h4>Endereço de Entrega</h4><p>Rua Exemplo, 123 – CEP:00000-000</p>
+        <h4>Pagamento</h4>
+        <input class="input" placeholder="Número do Cartão" />
+        <input class="input" placeholder="Validade MM/AA" />
+        <input class="input" placeholder="CVV" />
+      </div>
+      <div class="btn-container"><a class="btn">Confirmar Pagamento</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 7: Tela de Checkout.</div>
+    <div class="annotation">Revisão de dados antes do pagamento.</div>
+  </div>
+
+  <!-- 8. Pedido Confirmado -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Confirmado</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content"><h3>Obrigado pela compra!</h3><p>Pedido #12345</p></div>
+      <div class="btn-container"><a class="btn">Ver Acompanhamento</a></div>
+      <div class="footer">© 2025 Cupcakes Inc.</div>
+    </div>
+    <div class="caption">Figura 8: Confirmação de Pedido.</div>
+    <div class="annotation">Usuário recebe número do pedido.</div>
+  </div>
+
+  <!-- 9. Acompanhamento -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="header"><span class="back">←</span><h1>Acompanhamento</h1><img src="https://via.placeholder.com/24" class="icon"/></div>
+      <div class="content">
+        <p>Status: <strong>Preparando</strong></p>
+        <div style="width:100%;height:8px;background:#ddd;border-radius:4px;margin:12px 0;"><div style="width:33%;height:8px;background:#8bc34a;border-radius:4px;"></div></div>
+        <p>Próximo: Enviado → Entregue</p>
+      </div>
+      <div class="btn-container"><a class="btn">Confirmar Recebimento</a></div>
+      <div class="footer">Última atualização: 10 min atrás</div>
+    </div>
+    <div class="caption">Figura 9: Acompanhamento de Pedido.</div>
+    <div class="annotation">Barra de progresso visualiza fases.</div>
+  </div>
+
+</body>
+</html>

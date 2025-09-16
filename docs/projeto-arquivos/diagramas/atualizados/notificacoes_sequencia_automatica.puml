@@ -1,0 +1,87 @@
+@startuml notificacoes_sequencia_automatica
+title Fluxo de Notificações Automáticas - Atualização de Status
+
+actor Admin as admin
+participant OrderHandler as handler
+participant NotificationService as notifService
+participant Database as db
+participant NotificationAPI as api
+actor Cliente as client
+actor Entregador as delivery
+
+== Atualização de Status do Pedido ==
+
+admin -> handler : PUT /orders/:id/status
+activate handler
+
+handler -> db : buscar pedido
+db -> handler : pedido encontrado
+
+handler -> db : atualizar status
+db -> handler : status atualizado
+
+handler -> notifService : NotifyOrderStatusChange(order, newStatus)
+activate notifService
+
+== Criação de Notificações ==
+
+alt status = "confirmed"
+    notifService -> notifService : preparar mensagem para cliente
+    notifService -> db : criar notificação para cliente
+    
+    notifService -> notifService : preparar mensagem para admin
+    notifService -> db : criar notificação para admin
+    
+else status = "ready"
+    notifService -> notifService : preparar mensagem para cliente
+    notifService -> db : criar notificação para cliente
+    
+    notifService -> db : buscar entregadores
+    db -> notifService : lista de entregadores
+    
+    loop para cada entregador
+        notifService -> notifService : preparar mensagem para entregador
+        notifService -> db : criar notificação para entregador
+    end
+    
+else status = "delivered"
+    notifService -> notifService : preparar mensagem para cliente
+    notifService -> db : criar notificação para cliente
+    
+    notifService -> notifService : preparar mensagem para admin
+    notifService -> db : criar notificação para admin
+end
+
+notifService -> handler : sucesso
+deactivate notifService
+
+handler -> admin : resposta de sucesso
+deactivate handler
+
+== Visualização das Notificações ==
+
+client -> api : GET /notifications/unread-count
+api -> db : contar não lidas
+db -> api : quantidade
+api -> client : badge atualizado
+
+client -> api : GET /notifications
+api -> db : buscar notificações
+db -> api : lista de notificações
+api -> client : exibir notificações
+
+delivery -> api : GET /notifications
+api -> db : buscar notificações
+db -> api : lista de notificações
+api -> delivery : exibir notificações
+
+note right of notifService
+  Mensagens personalizadas 
+  por tipo de usuário:
+  
+  Cliente: "Seu pedido foi confirmado"
+  Admin: "Novo pedido confirmado"
+  Entregador: "Pedido pronto para entrega"
+end note
+
+@enduml
