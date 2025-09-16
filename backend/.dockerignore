@@ -1,0 +1,38 @@
+# Arquivos de desenvolvimento
+.env
+.env.local
+.env.development
+.env.test
+
+# Logs
+*.log
+logs
+
+# Dependências
+node_modules/
+vendor/
+
+# Build artifacts
+dist/
+build/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos do Git
+.git
+.gitignore
+
+# Documentação
+*.md
+docs/
+
+# Testes
+*_test.go
+**/__tests__/
+coverage/
+
+# Arquivos temporários
+tmp/
+temp/

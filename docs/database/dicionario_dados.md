@@ -1,119 +1,266 @@
-# Dicionário de Dados - Sistema de Delivery de Cupcakes
+# 📊 Dicionário de Dados - Sistema de Delivery de Cupcakes
 
-## Tabela: usuarios
+**Versão:** 2.0 (Implementação Final)  
+**Data:** Setembro 2025  
+**SGBD:** PostgreSQL 12+  
+**ORM:** GORM (Go)
+
+---
+
+## 👥 Tabela: users
+Armazena todos os usuários do sistema (clientes, entregadores e administradores).
+
 | Campo | Tipo | Descrição | Restrições |
 |-------|------|-----------|------------|
-| id | UUID | Identificador único do usuário | Chave primária |
-| nome | VARCHAR(100) | Nome completo do usuário | NOT NULL |
-| email | VARCHAR(100) | Email do usuário (usado para login) | NOT NULL, UNIQUE |
-| senha | VARCHAR(255) | Senha criptografada | NOT NULL |
-| tipo | VARCHAR(20) | Tipo do usuário (CLIENTE, ADMIN, ENTREGADOR) | NOT NULL |
-| telefone | VARCHAR(20) | Número de telefone | Opcional |
-| placa_veiculo | VARCHAR(10) | Placa do veículo (apenas para entregadores) | Opcional |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
-| ultima_atualizacao | TIMESTAMP | Data e hora da última atualização | NOT NULL |
+| id | SERIAL | Identificador único do usuário | PRIMARY KEY |
+| name | VARCHAR(255) | Nome completo do usuário | NOT NULL |
+| email | VARCHAR(255) | Email único para login | NOT NULL, UNIQUE |
+| password | VARCHAR(255) | Senha hash (bcrypt) | NOT NULL |
+| type | user_type | Tipo: customer, delivery, admin | NOT NULL |
+| vehicle | VARCHAR(255) | Veículo (obrigatório para entregadores) | NULL |
+| created_at | TIMESTAMP | Data/hora de criação (GORM) | DEFAULT NOW() |
+| updated_at | TIMESTAMP | Data/hora da última atualização | DEFAULT NOW() |
+| deleted_at | TIMESTAMP | Soft delete (GORM) | NULL |
 
-## Tabela: enderecos
+**Índices:**
+- `idx_users_email` - Email único (excluindo deletados)
+- `idx_users_type` - Filtro por tipo de usuário
+- `idx_users_deleted_at` - Otimização soft delete
+
+**Constraints:**
+- `check_delivery_vehicle` - Entregadores devem ter veículo
+
+---
+
+## 🧁 Tabela: products
+Catálogo de produtos (cupcakes) disponíveis para venda.
+
 | Campo | Tipo | Descrição | Restrições |
 |-------|------|-----------|------------|
-| id | UUID | Identificador único do endereço | Chave primária |
-| usuario_id | UUID | ID do usuário dono do endereço | FK usuarios(id) |
-| cep | VARCHAR(9) | CEP do endereço | NOT NULL |
-| rua | VARCHAR(100) | Nome da rua | NOT NULL |
-| numero | VARCHAR(10) | Número do endereço | NOT NULL |
-| complemento | VARCHAR(100) | Complemento do endereço | Opcional |
-| bairro | VARCHAR(100) | Bairro | NOT NULL |
-| cidade | VARCHAR(100) | Cidade | NOT NULL |
-| estado | CHAR(2) | Sigla do estado | NOT NULL |
-| padrao | BOOLEAN | Indica se é o endereço padrão | DEFAULT false |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
+| id | SERIAL | Identificador único do produto | PRIMARY KEY |
+| name | VARCHAR(255) | Nome do cupcake | NOT NULL |
+| description | TEXT | Descrição detalhada do produto | NULL |
+| price | DECIMAL(10,2) | Preço unitário | NOT NULL, >= 0 |
+| image_url | VARCHAR(500) | URL da imagem do produto | NULL |
+| created_at | TIMESTAMP | Data/hora de criação (GORM) | DEFAULT NOW() |
+| updated_at | TIMESTAMP | Data/hora da última atualização | DEFAULT NOW() |
+| deleted_at | TIMESTAMP | Soft delete (GORM) | NULL |
 
-## Tabela: produtos
+**Índices:**
+- `idx_products_name` - Busca por nome
+- `idx_products_deleted_at` - Soft delete
+
+---
+
+## 📦 Tabela: orders
+Pedidos realizados pelos clientes.
+
 | Campo | Tipo | Descrição | Restrições |
 |-------|------|-----------|------------|
-| id | UUID | Identificador único do produto | Chave primária |
-| nome | VARCHAR(100) | Nome do cupcake | NOT NULL |
-| descricao | TEXT | Descrição detalhada do cupcake | Opcional |
-| preco | DECIMAL(10,2) | Preço unitário | NOT NULL |
-| imagem_url | VARCHAR(255) | URL da imagem do produto | Opcional |
-| categoria | VARCHAR(50) | Categoria (TRADICIONAL, ESPECIAL) | Opcional |
-| status | VARCHAR(20) | Status do produto | NOT NULL |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
-| ultima_atualizacao | TIMESTAMP | Data e hora da última atualização | NOT NULL |
+| id | SERIAL | Identificador único do pedido | PRIMARY KEY |
+| customer_id | INTEGER | ID do cliente que fez o pedido | FK users(id), NOT NULL |
+| delivery_id | INTEGER | ID do entregador (quando aceito) | FK users(id), NULL |
+| status | order_status | Status atual do pedido | NOT NULL, DEFAULT 'pending' |
+| total | DECIMAL(10,2) | Valor total do pedido | NOT NULL, >= 0 |
+| address | TEXT | Endereço completo de entrega | NOT NULL |
+| created_at | TIMESTAMP | Data/hora de criação (GORM) | DEFAULT NOW() |
+| updated_at | TIMESTAMP | Data/hora da última atualização | DEFAULT NOW() |
+| deleted_at | TIMESTAMP | Soft delete (GORM) | NULL |
 
-## Tabela: carrinhos
+**Status possíveis:**
+- `pending` - Aguardando confirmação
+- `preparing` - Em preparação  
+- `ready` - Pronto para entrega
+- `delivering` - Saiu para entrega
+- `delivered` - Entregue
+
+**Índices:**
+- `idx_orders_customer_id` - Pedidos por cliente
+- `idx_orders_delivery_id` - Pedidos por entregador
+- `idx_orders_status` - Filtro por status
+- `idx_orders_created_at` - Ordenação temporal
+- `idx_orders_deleted_at` - Soft delete
+
+**Constraints:**
+- `check_delivery_user_trigger` - delivery_id deve ser um entregador ativo
+
+---
+
+## 🛒 Tabela: order_items
+Itens individuais de cada pedido (relacionamento N:N entre orders e products).
+
 | Campo | Tipo | Descrição | Restrições |
 |-------|------|-----------|------------|
-| id | UUID | Identificador único do carrinho | Chave primária |
-| usuario_id | UUID | ID do usuário dono do carrinho | FK usuarios(id) |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
-| ultima_atualizacao | TIMESTAMP | Data e hora da última atualização | NOT NULL |
+| id | SERIAL | Identificador único do item | PRIMARY KEY |
+| order_id | INTEGER | ID do pedido pai | FK orders(id), NOT NULL |
+| product_id | INTEGER | ID do produto referenciado | FK products(id), NOT NULL |
+| quantity | INTEGER | Quantidade do produto | NOT NULL, > 0 |
+| price | DECIMAL(10,2) | Preço no momento da compra | NOT NULL, >= 0 |
+| created_at | TIMESTAMP | Data/hora de criação (GORM) | DEFAULT NOW() |
+| updated_at | TIMESTAMP | Data/hora da última atualização | DEFAULT NOW() |
+| deleted_at | TIMESTAMP | Soft delete (GORM) | NULL |
 
-## Tabela: itens_carrinho
+**Índices:**
+- `idx_order_items_order_id` - Itens por pedido
+- `idx_order_items_product_id` - Itens por produto
+- `idx_order_items_deleted_at` - Soft delete
+
+**Constraints:**
+- `ON DELETE CASCADE` - Remove itens quando pedido é deletado
+
+---
+
+## 🔔 Tabela: notifications
+Sistema de notificações para usuários sobre mudanças de status.
+
 | Campo | Tipo | Descrição | Restrições |
 |-------|------|-----------|------------|
-| id | UUID | Identificador único do item | Chave primária |
-| carrinho_id | UUID | ID do carrinho | FK carrinhos(id) |
-| produto_id | UUID | ID do produto | FK produtos(id) |
-| quantidade | INTEGER | Quantidade do item | NOT NULL |
-| preco_unitario | DECIMAL(10,2) | Preço unitário no momento da adição | NOT NULL |
-| subtotal | DECIMAL(10,2) | Subtotal (quantidade * preço) | NOT NULL |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
+| id | SERIAL | Identificador único da notificação | PRIMARY KEY |
+| user_id | INTEGER | ID do usuário destinatário | FK users(id), NOT NULL |
+| order_id | INTEGER | ID do pedido relacionado | FK orders(id), NULL |
+| type | notification_type | Tipo da notificação | NOT NULL |
+| title | VARCHAR(255) | Título da notificação | NOT NULL |
+| message | TEXT | Conteúdo da mensagem | NOT NULL |
+| is_read | BOOLEAN | Status de leitura | DEFAULT FALSE |
+| created_at | TIMESTAMP | Data/hora de criação | DEFAULT NOW() |
+| updated_at | TIMESTAMP | Data/hora da última atualização | DEFAULT NOW() |
 
-## Tabela: pedidos
-| Campo | Tipo | Descrição | Restrições |
-|-------|------|-----------|------------|
-| id | UUID | Identificador único do pedido | Chave primária |
-| usuario_id | UUID | ID do cliente | FK usuarios(id) |
-| entregador_id | UUID | ID do entregador designado | FK usuarios(id) |
-| endereco_id | UUID | ID do endereço de entrega | FK enderecos(id) |
-| status | VARCHAR(20) | Status do pedido | NOT NULL |
-| valor_produtos | DECIMAL(10,2) | Valor total dos produtos | NOT NULL |
-| valor_frete | DECIMAL(10,2) | Valor do frete | NOT NULL |
-| valor_total | DECIMAL(10,2) | Valor total (produtos + frete) | NOT NULL |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
-| ultima_atualizacao | TIMESTAMP | Data e hora da última atualização | NOT NULL |
+**Tipos de notificação:**
+- `order_created` - Pedido criado
+- `order_confirmed` - Pedido confirmado
+- `order_preparing` - Em preparação
+- `order_ready` - Pronto para entrega
+- `order_delivering` - Saiu para entrega
+- `order_delivered` - Entregue
+- `order_cancelled` - Cancelado
 
-## Tabela: itens_pedido
-| Campo | Tipo | Descrição | Restrições |
-|-------|------|-----------|------------|
-| id | UUID | Identificador único do item | Chave primária |
-| pedido_id | UUID | ID do pedido | FK pedidos(id) |
-| produto_id | UUID | ID do produto | FK produtos(id) |
-| quantidade | INTEGER | Quantidade do item | NOT NULL |
-| preco_unitario | DECIMAL(10,2) | Preço unitário no momento da compra | NOT NULL |
-| subtotal | DECIMAL(10,2) | Subtotal (quantidade * preço) | NOT NULL |
+**Índices:**
+- `idx_notifications_user_id` - Notificações por usuário
+- `idx_notifications_order_id` - Notificações por pedido
+- `idx_notifications_is_read` - Filtro por status de leitura
+- `idx_notifications_created_at` - Ordenação temporal
 
-## Tabela: pagamentos
-| Campo | Tipo | Descrição | Restrições |
-|-------|------|-----------|------------|
-| id | UUID | Identificador único do pagamento | Chave primária |
-| pedido_id | UUID | ID do pedido | FK pedidos(id) |
-| metodo | VARCHAR(50) | Método de pagamento | NOT NULL |
-| status | VARCHAR(20) | Status do pagamento | NOT NULL |
-| valor | DECIMAL(10,2) | Valor do pagamento | NOT NULL |
-| transacao_id | VARCHAR(100) | ID da transação (gateway) | Opcional |
-| data_criacao | TIMESTAMP | Data e hora de criação do registro | NOT NULL |
-| ultima_atualizacao | TIMESTAMP | Data e hora da última atualização | NOT NULL |
+**Constraints:**
+- `ON DELETE CASCADE` - Remove notificações quando usuário/pedido é deletado
 
-## Tabela: provas_entrega
-| Campo | Tipo | Descrição | Restrições |
-|-------|------|-----------|------------|
-| id | UUID | Identificador único da prova | Chave primária |
-| pedido_id | UUID | ID do pedido | FK pedidos(id) |
-| foto_url | VARCHAR(255) | URL da foto de confirmação | NOT NULL |
-| data_hora | TIMESTAMP | Data e hora do registro | NOT NULL |
-| latitude | DECIMAL(10,8) | Latitude da localização | Opcional |
-| longitude | DECIMAL(11,8) | Longitude da localização | Opcional |
+---
 
-## Tabela: notificacoes
-| Campo | Tipo | Descrição | Restrições |
-|-------|------|-----------|------------|
-| id | UUID | Identificador único da notificação | Chave primária |
-| usuario_id | UUID | ID do usuário destinatário | FK usuarios(id) |
-| pedido_id | UUID | ID do pedido relacionado | FK pedidos(id) |
-| tipo | VARCHAR(50) | Tipo da notificação | NOT NULL |
-| titulo | VARCHAR(100) | Título da notificação | NOT NULL |
-| mensagem | TEXT | Conteúdo da notificação | NOT NULL |
-| lida | BOOLEAN | Indica se foi lida | DEFAULT false |
-| data_criacao | TIMESTAMP | Data e hora de criação | NOT NULL |
+## 📊 Relacionamentos
+
+### 🔗 Relacionamentos Principais
+1. **users → orders (customer)**
+   - Um cliente pode ter vários pedidos (1:N)
+   - `orders.customer_id → users.id`
+
+2. **users → orders (delivery)**
+   - Um entregador pode aceitar vários pedidos (1:N)
+   - `orders.delivery_id → users.id` (opcional)
+
+3. **orders → order_items**
+   - Um pedido pode ter vários itens (1:N)
+   - `order_items.order_id → orders.id`
+
+4. **products → order_items**
+   - Um produto pode estar em vários itens (1:N)
+   - `order_items.product_id → products.id`
+
+5. **users → notifications**
+   - Um usuário pode receber várias notificações (1:N)
+   - `notifications.user_id → users.id`
+
+6. **orders → notifications**
+   - Um pedido pode gerar várias notificações (1:N)
+   - `notifications.order_id → orders.id` (opcional)
+
+---
+
+## 🏗️ Estrutura Implementada vs. Planejada
+
+### ✅ **Implementado (Atual)**
+- **users** - Usuários com tipos (customer, delivery, admin)
+- **products** - Catálogo de cupcakes
+- **orders** - Pedidos com status
+- **order_items** - Itens dos pedidos
+- **notifications** - Sistema de notificações
+
+### ❌ **Não Implementado (Escopo Reduzido)**
+- ~~enderecos~~ - Endereço armazenado como texto em orders.address
+- ~~carrinhos~~ - Carrinho implementado no frontend (localStorage)
+- ~~itens_carrinho~~ - Não persistido no banco
+- ~~pagamentos~~ - Fora do escopo (simulado)
+- ~~provas_entrega~~ - Fora do escopo
+
+### 🎯 **Decisões de Design**
+- **Simplicidade**: Endereço como texto ao invés de tabela separada
+- **Performance**: Carrinho no localStorage ao invés do banco
+- **Escopo**: Foco no fluxo principal de pedidos
+- **Flexibilidade**: Soft delete para auditoria
+
+---
+
+## 🔧 Configurações Técnicas
+
+### **GORM Configuration**
+```go
+// Soft Delete automático
+type Model struct {
+    ID        uint           `gorm:"primarykey"`
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+```
+
+### **Enums PostgreSQL**
+```sql
+CREATE TYPE user_type AS ENUM ('customer', 'delivery', 'admin');
+CREATE TYPE order_status AS ENUM ('pending', 'preparing', 'ready', 'delivering', 'delivered');
+CREATE TYPE notification_type AS ENUM ('order_created', 'order_confirmed', ...);
+```
+
+### **Triggers Automáticos**
+- `update_updated_at` - Atualiza timestamp automaticamente
+- `check_delivery_user` - Valida se entregador é válido
+
+---
+
+## 📈 Performance e Otimização
+
+### **Índices Estratégicos**
+- **Busca frequente**: email, status, user_id
+- **Ordenação**: created_at, updated_at
+- **Relacionamentos**: foreign keys indexadas
+- **Soft Delete**: deleted_at indexado
+
+### **Queries Otimizadas**
+- Filtros sempre incluem `deleted_at IS NULL`
+- Joins otimizados com índices em foreign keys
+- Paginação usando LIMIT/OFFSET com ORDER BY
+
+### **Escalabilidade**
+- Estrutura suporta até 1M+ pedidos
+- Índices otimizados para crescimento
+- Soft delete para auditoria sem perda de performance
+
+---
+
+## 💾 Dados de Exemplo
+
+### **Usuários Iniciais**
+```sql
+-- Administrador padrão
+INSERT INTO users (name, email, password, type) VALUES 
+('Administrador', 'admin@cupcake.com', '$2a$10$...', 'admin');
+```
+
+### **Produtos Iniciais**
+- Cupcake de Chocolate - R$ 8,50
+- Cupcake de Morango - R$ 9,00  
+- Cupcake Red Velvet - R$ 10,50
+- Cupcake de Limão - R$ 8,00
+- Cupcake de Cenoura - R$ 7,50
+- Cupcake de Coco - R$ 9,50
+
+---
+
+**📝 Nota:** Este dicionário reflete a implementação final do sistema, com foco na funcionalidade essencial do delivery de cupcakes.

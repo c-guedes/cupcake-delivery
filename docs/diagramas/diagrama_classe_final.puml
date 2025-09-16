@@ -1,0 +1,211 @@
+@startuml diagrama_classe_completo
+!theme plain
+
+title Diagrama de Classes - Sistema de Delivery de Cupcakes (Final)
+
+' Enums
+enum UserType {
+    CUSTOMER
+    DELIVERY  
+    ADMIN
+}
+
+enum OrderStatus {
+    PENDING
+    PREPARING
+    READY
+    DELIVERING
+    DELIVERED
+}
+
+enum NotificationType {
+    ORDER_CREATED
+    ORDER_CONFIRMED
+    ORDER_PREPARING
+    ORDER_READY
+    ORDER_DELIVERING
+    ORDER_DELIVERED
+    ORDER_CANCELLED
+}
+
+' Classes principais
+class User {
+    +ID: uint
+    +Name: string
+    +Email: string
+    +Password: string
+    +Type: UserType
+    +Vehicle: string (opcional)
+    +CreatedAt: time
+    +UpdatedAt: time
+    +DeletedAt: time
+    --
+    +Register()
+    +Login()
+    +UpdateProfile()
+    +ValidatePassword()
+}
+
+class Product {
+    +ID: uint
+    +Name: string
+    +Description: string
+    +Price: float64
+    +ImageURL: string
+    +CreatedAt: time
+    +UpdatedAt: time
+    +DeletedAt: time
+    --
+    +Create()
+    +Update()
+    +Delete()
+    +GetAll()
+    +GetByID()
+}
+
+class Order {
+    +ID: uint
+    +CustomerID: uint
+    +DeliveryID: uint (opcional)
+    +Status: OrderStatus
+    +Total: float64
+    +Address: string
+    +CreatedAt: time
+    +UpdatedAt: time
+    +DeletedAt: time
+    --
+    +Create()
+    +UpdateStatus()
+    +GetByCustomer()
+    +GetByDelivery()
+    +GetAll()
+    +CalculateTotal()
+}
+
+class OrderItem {
+    +ID: uint
+    +OrderID: uint
+    +ProductID: uint
+    +Quantity: int
+    +Price: float64
+    +CreatedAt: time
+    +UpdatedAt: time
+    +DeletedAt: time
+    --
+    +AddToOrder()
+    +UpdateQuantity()
+    +RemoveFromOrder()
+}
+
+class Notification {
+    +ID: uint
+    +UserID: uint
+    +OrderID: uint (opcional)
+    +Type: NotificationType
+    +Title: string
+    +Message: string
+    +IsRead: bool
+    +CreatedAt: time
+    +UpdatedAt: time
+    --
+    +Create()
+    +MarkAsRead()
+    +GetByUser()
+    +GetUnreadCount()
+}
+
+' Services
+class AuthService {
+    +GenerateToken(User): string
+    +ValidateToken(string): User
+    +HashPassword(string): string
+    +ComparePassword(string, string): bool
+}
+
+class NotificationService {
+    +CreateNotification(data): Notification
+    +GetUserNotifications(userID): []Notification
+    +MarkAsRead(notificationID): error
+    +MarkAllAsRead(userID): error
+    +GetUnreadCount(userID): int
+}
+
+class OrderService {
+    +CreateOrder(orderData): Order
+    +UpdateOrderStatus(orderID, status): error
+    +GetOrdersByStatus(status): []Order
+    +AssignDelivery(orderID, deliveryID): error
+}
+
+' Handlers
+class AuthHandler {
+    +Register(context)
+    +Login(context)
+    +GetProfile(context)
+}
+
+class ProductHandler {
+    +List(context)
+    +Get(context)
+    +Create(context)
+    +Update(context)
+    +Delete(context)
+}
+
+class OrderHandler {
+    +Create(context)
+    +List(context)
+    +UpdateStatus(context)
+    +GetByID(context)
+}
+
+class NotificationHandler {
+    +GetNotifications(context)
+    +GetUnreadCount(context)
+    +MarkAsRead(context)
+    +MarkAllAsRead(context)
+}
+
+' Relações entre entidades
+User ||--o{ Order : "customer"
+User ||--o{ Order : "delivery (opcional)"
+User ||--o{ Notification : "recebe"
+
+Order ||--o{ OrderItem : "contém"
+Order ||--o{ Notification : "gera"
+
+Product ||--o{ OrderItem : "referencia"
+
+User }o--|| UserType
+Order }o--|| OrderStatus
+Notification }o--|| NotificationType
+
+' Relações com services
+AuthService ..> User : "manipula"
+NotificationService ..> Notification : "manipula"
+OrderService ..> Order : "manipula"
+
+' Relações com handlers
+AuthHandler ..> AuthService : "usa"
+ProductHandler ..> Product : "manipula"
+OrderHandler ..> OrderService : "usa"
+NotificationHandler ..> NotificationService : "usa"
+
+' Middleware
+class AuthMiddleware {
+    +ValidateToken(context)
+    +ExtractUser(context): User
+}
+
+class TypeMiddleware {
+    +CheckUserType(requiredType): middleware
+}
+
+AuthMiddleware ..> AuthService : "usa"
+TypeMiddleware ..> User : "verifica"
+
+note right of User : "GORM Model com soft delete\nSenha não retornada em JSON"
+note right of Order : "Total calculado automaticamente\nStatus atualizado conforme fluxo"
+note right of Notification : "Sistema de notificações em tempo real\nSuporta diferentes tipos de evento"
+
+@enduml

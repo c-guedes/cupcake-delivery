@@ -1,0 +1,115 @@
+@startuml diagrama_banco_dados
+!theme plain
+
+title Diagrama de Banco de Dados - Sistema de Delivery de Cupcakes
+
+' Configurações de aparência
+skinparam entity {
+    BackgroundColor #E8F4FD
+    BorderColor #1976D2
+    FontColor Black
+}
+
+skinparam enum {
+    BackgroundColor #FFF3E0
+    BorderColor #F57C00
+}
+
+' Entidades principais
+entity "users" {
+    * id : SERIAL <<PK>>
+    --
+    * name : VARCHAR(255)
+    * email : VARCHAR(255) <<UNIQUE>>
+    * password : VARCHAR(255)
+    * type : VARCHAR(20) <<CHECK>>
+    * vehicle : VARCHAR(255) <<NULL>>
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+    * deleted_at : TIMESTAMP <<NULL>>
+}
+
+entity "products" {
+    * id : SERIAL <<PK>>
+    --
+    * name : VARCHAR(255)
+    * description : TEXT
+    * price : DECIMAL(10,2)
+    * image_url : VARCHAR(500)
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+    * deleted_at : TIMESTAMP <<NULL>>
+}
+
+entity "orders" {
+    * id : SERIAL <<PK>>
+    --
+    * customer_id : INTEGER <<FK>>
+    * delivery_id : INTEGER <<FK,NULL>>
+    * status : VARCHAR(20) <<CHECK>>
+    * total : DECIMAL(10,2)
+    * address : TEXT
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+    * deleted_at : TIMESTAMP <<NULL>>
+}
+
+entity "order_items" {
+    * id : SERIAL <<PK>>
+    --
+    * order_id : INTEGER <<FK>>
+    * product_id : INTEGER <<FK>>
+    * quantity : INTEGER
+    * price : DECIMAL(10,2)
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+    * deleted_at : TIMESTAMP <<NULL>>
+}
+
+entity "notifications" {
+    * id : SERIAL <<PK>>
+    --
+    * user_id : INTEGER <<FK>>
+    * order_id : INTEGER <<FK,NULL>>
+    * type : VARCHAR(50)
+    * title : VARCHAR(255)
+    * message : TEXT
+    * is_read : BOOLEAN DEFAULT FALSE
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+}
+
+' Enums representados como notas
+note top of users : "type CHECK (customer, delivery, admin)"
+note top of orders : "status CHECK (pending, preparing, ready, delivering, delivered)"
+note top of notifications : "type VALUES (order_created, order_confirmed, order_preparing, order_ready, order_delivering, order_delivered, order_cancelled)"
+
+' Relacionamentos
+users ||--o{ orders : "customer_id"
+users ||--o{ orders : "delivery_id"
+users ||--o{ notifications : "user_id"
+
+orders ||--o{ order_items : "order_id"
+orders ||--o{ notifications : "order_id"
+
+products ||--o{ order_items : "product_id"
+
+' Índices importantes
+note bottom of users : "ÍNDICES:\n- UNIQUE(email)\n- INDEX(type)\n- INDEX(deleted_at)"
+
+note bottom of orders : "ÍNDICES:\n- INDEX(customer_id)\n- INDEX(delivery_id)\n- INDEX(status)\n- INDEX(created_at)\n- INDEX(deleted_at)"
+
+note bottom of order_items : "ÍNDICES:\n- INDEX(order_id)\n- INDEX(product_id)\n- INDEX(deleted_at)"
+
+note bottom of notifications : "ÍNDICES:\n- INDEX(user_id)\n- INDEX(order_id)\n- INDEX(is_read)\n- INDEX(created_at)"
+
+note bottom of products : "ÍNDICES:\n- INDEX(name)\n- INDEX(deleted_at)"
+
+' Constraints
+note right of orders : "CONSTRAINTS:\n- customer_id REFERENCES users(id)\n- delivery_id REFERENCES users(id)\n- total >= 0\n- status IN (pending, preparing, ready, delivering, delivered)"
+
+note right of order_items : "CONSTRAINTS:\n- order_id REFERENCES orders(id)\n- product_id REFERENCES products(id)\n- quantity > 0\n- price >= 0"
+
+note right of notifications : "CONSTRAINTS:\n- user_id REFERENCES users(id)\n- order_id REFERENCES orders(id)\n- type IN (order_created, order_confirmed, etc.)"
+
+@enduml

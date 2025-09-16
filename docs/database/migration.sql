@@ -1,29 +1,20 @@
--- Script de Criação do Banco de Dados
--- Sistema de Delivery de Cupcakes (Implementação Final)
--- PostgreSQL 12+
--- GORM Compatible
-
--- Criar banco de dados
-CREATE DATABASE cupcake_delivery
-    WITH 
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'en_US.utf8'
-    LC_CTYPE = 'en_US.utf8'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1;
-
-\connect cupcake_delivery
+-- Migração do Banco de Dados - Sistema de Delivery de Cupcakes
+-- Versão: 1.0
+-- Data: Setembro 2025
 
 -- Extensões necessárias
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Criar enums para tipos específicos (conforme implementação)
+-- Criar enum para tipos de usuário
 CREATE TYPE user_type AS ENUM ('customer', 'delivery', 'admin');
+
+-- Criar enum para status do pedido
 CREATE TYPE order_status AS ENUM ('pending', 'preparing', 'ready', 'delivering', 'delivered');
+
+-- Criar enum para tipos de notificação
 CREATE TYPE notification_type AS ENUM (
     'order_created',
-    'order_confirmed',
+    'order_confirmed', 
     'order_preparing',
     'order_ready',
     'order_delivering',
@@ -31,21 +22,21 @@ CREATE TYPE notification_type AS ENUM (
     'order_cancelled'
 );
 
--- Tabela de usuários (conforme models.go)
-CREATE TABLE users (
+-- Tabela de usuários
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     type user_type NOT NULL,
-    vehicle VARCHAR(255), -- Apenas para entregadores
+    vehicle VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE -- Soft delete (GORM)
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
--- Tabela de produtos (conforme models.go)
-CREATE TABLE products (
+-- Tabela de produtos
+CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -53,24 +44,24 @@ CREATE TABLE products (
     image_url VARCHAR(500),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE -- Soft delete (GORM)
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
--- Tabela de pedidos (conforme models.go)
-CREATE TABLE orders (
+-- Tabela de pedidos
+CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     customer_id INTEGER NOT NULL REFERENCES users(id),
-    delivery_id INTEGER REFERENCES users(id), -- Opcional
+    delivery_id INTEGER REFERENCES users(id),
     status order_status NOT NULL DEFAULT 'pending',
     total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
     address TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE -- Soft delete (GORM)
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
--- Tabela de itens do pedido (conforme models.go)
-CREATE TABLE order_items (
+-- Tabela de itens do pedido
+CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     product_id INTEGER NOT NULL REFERENCES products(id),
@@ -78,11 +69,11 @@ CREATE TABLE order_items (
     price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE -- Soft delete (GORM)
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
--- Tabela de notificações (conforme notification.go)
-CREATE TABLE notifications (
+-- Tabela de notificações
+CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
@@ -96,31 +87,31 @@ CREATE TABLE notifications (
 
 -- Índices para otimização de performance
 -- Usuários
-CREATE INDEX idx_users_email ON users(email) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_type ON users(type) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_deleted_at ON users(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_users_type ON users(type) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_users_deleted_at ON users(deleted_at);
 
--- Produtos  
-CREATE INDEX idx_products_name ON products(name) WHERE deleted_at IS NULL;
-CREATE INDEX idx_products_deleted_at ON products(deleted_at);
+-- Produtos
+CREATE INDEX IF NOT EXISTS idx_products_name ON products(name) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_products_deleted_at ON products(deleted_at);
 
 -- Pedidos
-CREATE INDEX idx_orders_customer_id ON orders(customer_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_delivery_id ON orders(delivery_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_status ON orders(status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_created_at ON orders(created_at) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_deleted_at ON orders(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_delivery_id ON orders(delivery_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_deleted_at ON orders(deleted_at);
 
 -- Itens do pedido
-CREATE INDEX idx_order_items_order_id ON order_items(order_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_order_items_product_id ON order_items(product_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_order_items_deleted_at ON order_items(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_order_items_deleted_at ON order_items(deleted_at);
 
 -- Notificações
-CREATE INDEX idx_notifications_user_id ON notifications(user_id);
-CREATE INDEX idx_notifications_order_id ON notifications(order_id);
-CREATE INDEX idx_notifications_is_read ON notifications(is_read);
-CREATE INDEX idx_notifications_created_at ON notifications(created_at);
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_order_id ON notifications(order_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
 
 -- Função para atualizar updated_at automaticamente
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -147,11 +138,12 @@ CREATE TRIGGER update_order_items_updated_at BEFORE UPDATE ON order_items
 CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON notifications
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Constraint para verificar se entregador tem veículo
+-- Constraints adicionais
+-- Verificar se entregador tem veículo quando necessário
 ALTER TABLE users ADD CONSTRAINT check_delivery_vehicle 
     CHECK (type != 'delivery' OR vehicle IS NOT NULL);
 
--- Função para verificar se delivery_id é realmente um entregador
+-- Verificar se delivery_id é realmente um entregador
 CREATE OR REPLACE FUNCTION check_delivery_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -190,9 +182,8 @@ INSERT INTO products (name, description, price, image_url) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Comentários nas tabelas
-COMMENT ON DATABASE cupcake_delivery IS 'Banco de dados do sistema de delivery de cupcakes (implementação final)';
-COMMENT ON TABLE users IS 'Usuários do sistema (clientes, entregadores e administradores)';
-COMMENT ON TABLE products IS 'Catálogo de cupcakes disponíveis para venda';
+COMMENT ON TABLE users IS 'Tabela de usuários do sistema (clientes, entregadores e administradores)';
+COMMENT ON TABLE products IS 'Catálogo de produtos (cupcakes) disponíveis para venda';
 COMMENT ON TABLE orders IS 'Pedidos realizados pelos clientes';
 COMMENT ON TABLE order_items IS 'Itens individuais de cada pedido';
 COMMENT ON TABLE notifications IS 'Sistema de notificações para os usuários';
@@ -204,5 +195,5 @@ COMMENT ON COLUMN orders.status IS 'Status atual do pedido';
 COMMENT ON COLUMN order_items.price IS 'Preço do produto no momento da compra';
 COMMENT ON COLUMN notifications.is_read IS 'Indica se a notificação foi lida pelo usuário';
 
--- Verificação final
-SELECT 'Banco de dados criado com sucesso!' as status;
+-- Verificar se tudo foi criado corretamente
+SELECT 'Migração concluída com sucesso!' as status;

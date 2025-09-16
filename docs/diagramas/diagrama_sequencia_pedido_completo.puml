@@ -1,0 +1,129 @@
+@startuml diagrama_sequencia_pedido_completo
+!theme plain
+
+title Sequência Completa - Pedido com Notificações
+
+actor Cliente as C
+participant "Frontend" as F
+participant "Backend API" as B
+participant "Auth Service" as AS
+participant "Order Service" as OS
+participant "Notification Service" as NS
+participant "Database" as DB
+actor Entregador as E
+actor Admin as A
+
+== Autenticação ==
+C -> F: Login
+F -> B: POST /login
+B -> AS: ValidateCredentials()
+AS -> DB: Buscar usuário
+DB -> AS: Dados do usuário
+AS -> B: JWT Token
+B -> F: Token + User data
+F -> C: Redirecionar para dashboard
+
+== Criação do Pedido ==
+C -> F: Adicionar produtos ao carrinho
+C -> F: Finalizar pedido
+F -> B: POST /orders (com JWT)
+B -> AS: ValidateToken()
+AS -> B: User data
+
+B -> OS: CreateOrder()
+OS -> DB: Salvar order
+OS -> DB: Salvar order_items
+DB -> OS: Order criado
+
+OS -> NS: CreateNotification(ORDER_CREATED)
+NS -> DB: Salvar notification para cliente
+NS -> DB: Salvar notification para admins
+
+B -> F: Order created
+F -> C: Confirmação do pedido + Notificação
+
+== Administrador Confirma Pedido ==
+A -> F: Ver pedidos pendentes
+F -> B: GET /orders?status=pending
+B -> DB: Buscar pedidos
+DB -> B: Lista de pedidos
+B -> F: Pedidos pendentes
+F -> A: Lista de pedidos
+
+A -> F: Confirmar pedido
+F -> B: PUT /orders/{id}/status (preparing)
+B -> OS: UpdateOrderStatus()
+OS -> DB: Atualizar status
+OS -> NS: CreateNotification(ORDER_PREPARING)
+NS -> DB: Notification para cliente
+B -> F: Status atualizado
+F -> A: Confirmação
+
+== Pedido Pronto ==
+A -> F: Marcar como pronto
+F -> B: PUT /orders/{id}/status (ready)
+B -> OS: UpdateOrderStatus()
+OS -> DB: Atualizar status
+OS -> NS: CreateNotification(ORDER_READY)
+NS -> DB: Notification para cliente e entregadores
+B -> F: Status atualizado
+
+== Entregador Aceita ==
+E -> F: Ver pedidos disponíveis
+F -> B: GET /orders?status=ready
+B -> DB: Buscar pedidos prontos
+DB -> B: Lista de pedidos
+B -> F: Pedidos disponíveis
+F -> E: Lista de pedidos
+
+E -> F: Aceitar entrega
+F -> B: PUT /orders/{id}/status (delivering)
+B -> OS: UpdateOrderStatus() + AssignDelivery()
+OS -> DB: Atualizar status + delivery_id
+OS -> NS: CreateNotification(ORDER_DELIVERING)
+NS -> DB: Notification para cliente
+B -> F: Entrega aceita
+F -> E: Confirmação
+
+== Finalização da Entrega ==
+E -> F: Marcar como entregue
+F -> B: PUT /orders/{id}/status (delivered)
+B -> OS: UpdateOrderStatus()
+OS -> DB: Atualizar status
+OS -> NS: CreateNotification(ORDER_DELIVERED)
+NS -> DB: Notification para cliente e admin
+B -> F: Entrega concluída
+F -> E: Confirmação
+
+== Notificações em Tempo Real ==
+loop Verificação de Notificações
+    C -> F: Buscar notificações
+    F -> B: GET /notifications
+    B -> NS: GetUserNotifications()
+    NS -> DB: Buscar notifications
+    DB -> NS: Lista de notificações
+    NS -> B: Notificações
+    B -> F: Lista de notificações
+    F -> C: Exibir notificações
+end
+
+C -> F: Marcar notificação como lida
+F -> B: PUT /notifications/{id}/read
+B -> NS: MarkAsRead()
+NS -> DB: Atualizar is_read = true
+B -> F: Marcada como lida
+F -> C: Atualizar UI
+
+note over C, A
+    O sistema mantém todos os usuários 
+    informados através de notificações
+    automáticas em cada mudança de status
+end note
+
+note over OS, NS
+    Cada alteração de status do pedido
+    gera notificações específicas para
+    os usuários envolvidos
+end note
+
+@enduml

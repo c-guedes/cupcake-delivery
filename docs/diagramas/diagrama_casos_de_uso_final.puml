@@ -1,0 +1,145 @@
+@startuml diagrama_casos_de_uso_final
+!theme plain
+
+title Casos de Uso - Sistema de Delivery de Cupcakes (Final)
+
+left to right direction
+
+' Atores
+actor "Cliente" as Cliente
+actor "Entregador" as Entregador  
+actor "Administrador" as Admin
+actor "Sistema de Notificações" as SistemaNotif
+
+' Sistema
+rectangle "Sistema de Delivery de Cupcakes" {
+    
+    ' Casos de uso de Autenticação
+    usecase "Fazer Login" as UC_Login
+    usecase "Fazer Cadastro" as UC_Cadastro
+    usecase "Logout" as UC_Logout
+    
+    ' Casos de uso do Cliente
+    usecase "Visualizar Catálogo" as UC_VisualizarCatalogo
+    usecase "Adicionar ao Carrinho" as UC_AdicionarCarrinho
+    usecase "Gerenciar Carrinho" as UC_GerenciarCarrinho
+    usecase "Finalizar Pedido" as UC_FinalizarPedido
+    usecase "Acompanhar Pedido" as UC_AcompanharPedido
+    usecase "Visualizar Histórico" as UC_VisualizarHistorico
+    usecase "Receber Notificações" as UC_ReceberNotificacoes
+    usecase "Gerenciar Perfil" as UC_GerenciarPerfil
+    
+    ' Casos de uso do Entregador
+    usecase "Ver Pedidos Disponíveis" as UC_VerPedidosDisponiveis
+    usecase "Aceitar Entrega" as UC_AceitarEntrega
+    usecase "Iniciar Entrega" as UC_IniciarEntrega
+    usecase "Finalizar Entrega" as UC_FinalizarEntrega
+    usecase "Ver Histórico Entregas" as UC_HistoricoEntregas
+    
+    ' Casos de uso do Administrador
+    usecase "Gerenciar Produtos" as UC_GerenciarProdutos
+    usecase "Visualizar Todos Pedidos" as UC_VisualizarTodosPedidos
+    usecase "Atualizar Status Pedido" as UC_AtualizarStatusPedido
+    usecase "Gerenciar Usuários" as UC_GerenciarUsuarios
+    usecase "Visualizar Relatórios" as UC_VisualizarRelatorios
+    usecase "Configurar Sistema" as UC_ConfigurarSistema
+    
+    ' Casos de uso do Sistema
+    usecase "Enviar Notificação" as UC_EnviarNotificacao
+    usecase "Calcular Frete" as UC_CalcularFrete
+    usecase "Processar Pagamento" as UC_ProcessarPagamento
+    usecase "Validar Dados" as UC_ValidarDados
+    usecase "Manter Log Sistema" as UC_ManterLog
+    
+    ' Casos de uso Compartilhados
+    usecase "Alterar Tema (Dark/Light)" as UC_AlterarTema
+    usecase "Marcar Notificação Lida" as UC_MarcarNotificacaoLida
+}
+
+' Relacionamentos Cliente
+Cliente --> UC_Login
+Cliente --> UC_Cadastro
+Cliente --> UC_Logout
+Cliente --> UC_VisualizarCatalogo
+Cliente --> UC_AdicionarCarrinho
+Cliente --> UC_GerenciarCarrinho
+Cliente --> UC_FinalizarPedido
+Cliente --> UC_AcompanharPedido
+Cliente --> UC_VisualizarHistorico
+Cliente --> UC_ReceberNotificacoes
+Cliente --> UC_GerenciarPerfil
+Cliente --> UC_AlterarTema
+Cliente --> UC_MarcarNotificacaoLida
+
+' Relacionamentos Entregador
+Entregador --> UC_Login
+Entregador --> UC_Logout
+Entregador --> UC_VerPedidosDisponiveis
+Entregador --> UC_AceitarEntrega
+Entregador --> UC_IniciarEntrega
+Entregador --> UC_FinalizarEntrega
+Entregador --> UC_HistoricoEntregas
+Entregador --> UC_ReceberNotificacoes
+Entregador --> UC_GerenciarPerfil
+Entregador --> UC_AlterarTema
+Entregador --> UC_MarcarNotificacaoLida
+
+' Relacionamentos Administrador
+Admin --> UC_Login
+Admin --> UC_Logout
+Admin --> UC_GerenciarProdutos
+Admin --> UC_VisualizarTodosPedidos
+Admin --> UC_AtualizarStatusPedido
+Admin --> UC_GerenciarUsuarios
+Admin --> UC_VisualizarRelatorios
+Admin --> UC_ConfigurarSistema
+Admin --> UC_ReceberNotificacoes
+Admin --> UC_GerenciarPerfil
+Admin --> UC_AlterarTema
+Admin --> UC_MarcarNotificacaoLida
+
+' Relacionamentos Sistema
+SistemaNotif --> UC_EnviarNotificacao
+
+' Relacionamentos Include/Extend
+UC_FinalizarPedido ..> UC_ValidarDados : <<include>>
+UC_FinalizarPedido ..> UC_CalcularFrete : <<include>>
+UC_FinalizarPedido ..> UC_ProcessarPagamento : <<include>>
+UC_FinalizarPedido ..> UC_EnviarNotificacao : <<include>>
+
+UC_AtualizarStatusPedido ..> UC_EnviarNotificacao : <<include>>
+UC_AceitarEntrega ..> UC_EnviarNotificacao : <<include>>
+UC_FinalizarEntrega ..> UC_EnviarNotificacao : <<include>>
+
+UC_Login ..> UC_ValidarDados : <<include>>
+UC_Cadastro ..> UC_ValidarDados : <<include>>
+UC_GerenciarProdutos ..> UC_ValidarDados : <<include>>
+
+UC_VisualizarCatalogo <.. UC_AdicionarCarrinho : <<extend>>
+UC_GerenciarCarrinho <.. UC_FinalizarPedido : <<extend>>
+
+' Notas explicativas
+note right of UC_ReceberNotificacoes
+    Notificações em tempo real
+    sobre mudanças de status
+    dos pedidos
+end note
+
+note right of UC_EnviarNotificacao
+    Sistema automaticamente
+    envia notificações para
+    usuários relevantes
+end note
+
+note bottom of UC_AlterarTema
+    Funcionalidade disponível
+    para todos os tipos
+    de usuário
+end note
+
+note bottom of UC_ValidarDados
+    Validações robustas
+    no backend e frontend
+end note
+
+@enduml
