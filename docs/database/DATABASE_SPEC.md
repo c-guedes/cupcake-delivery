@@ -7,9 +7,11 @@ Sistema de Delivery de Cupcakes - Documentação Técnica do Banco de Dados
 O banco de dados foi projetado para suportar um sistema completo de delivery de cupcakes, incluindo gestão de usuários, produtos, pedidos e notificações em tempo real.
 
 ### 🔧 Tecnologia
-- **SGBD**: PostgreSQL 12+
+- **SGBD**: PostgreSQL 12+ (Supabase)
 - **ORM**: GORM (Go)
-- **Extensões**: uuid-ossp
+- **Extensões**: uuid-ossp, pgcrypto
+- **Hospedagem**: Supabase Cloud Database
+- **URL**: https://msubfzrwhvwdwixfskuk.supabase.co
 
 ## 📊 Estrutura das Tabelas
 
@@ -107,6 +109,7 @@ Itens individuais de cada pedido.
 
 **Constraints:**
 - `ON DELETE CASCADE` - Remove itens quando pedido é deletado
+- **Nota**: Constraint implementada diretamente no PostgreSQL/Supabase
 
 ### 🔔 notifications
 Sistema de notificações para usuários.
@@ -256,3 +259,33 @@ Esta especificação reflete a implementação atual usando GORM com PostgreSQL.
 - **Performance**: Índices otimizados para queries comuns
 - **Flexibilidade**: Estrutura suporta extensões futuras
 - **Manutenibilidade**: Soft delete e timestamps automáticos
+
+## 🚀 Integração com Supabase
+
+O sistema foi configurado para usar Supabase como banco de dados PostgreSQL gerenciado:
+
+### 🔗 **Conexão**
+- **URL**: https://msubfzrwhvwdwixfskuk.supabase.co
+- **Banco**: PostgreSQL 15+ na nuvem
+- **SSL**: Obrigatório (require)
+
+### 🛡️ **Segurança**
+- **Row Level Security (RLS)**: Habilitado em todas as tabelas
+- **Policies**: Usuários acessam apenas seus dados
+- **JWT**: Autenticação integrada com Supabase Auth
+
+### 📊 **Vantagens**
+- ✅ Backup automático
+- ✅ Escalabilidade automática  
+- ✅ Dashboard visual
+- ✅ Real-time subscriptions
+- ✅ API REST automática
+
+### 🔧 **Scripts de Migração**
+- `supabase_migration.sql` - Migração completa para Supabase
+- `migration.sql` - Migração para PostgreSQL local (Docker)
+
+### 📚 **Documentação Relacionada**
+- `SUPABASE_INTEGRATION.md` - Guia completo de integração
+- `.env.example` - Configurações de ambiente
+- `frontend/.env.example` - Configurações do frontend
