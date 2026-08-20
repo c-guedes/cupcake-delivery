@@ -86,6 +86,18 @@ npm run test:coverage      # Com cobertura
 npm run test:watch         # Watch mode
 ```
 
+## 📚 Documentação para entrega — PIT II
+
+- [Diagramas UML finais validados](docs/diagramas/README.md): classes, casos de uso, sequência e banco de dados.
+- [Mockups e IHC](docs/mockups/mockup_telas.html).
+- [Modelo físico e migração SQL](docs/database/migration.sql).
+- [Dicionário de dados](docs/database/dicionario_dados.md).
+- [Relatório de validação técnica](docs/VALIDACAO_TECNICA_PIT_II.md).
+- [Capturas técnicas da aplicação em execução](docs/pit_ii/evidencias/README.md).
+- [Checklist de entrega do PIT II](docs/PIT_II_CHECKLIST.md).
+
+> O repositório comprova a implementação e a validação técnica. As cinco fichas de avaliação precisam ser preenchidas por participantes reais antes do envio acadêmico.
+
 ## 📁 Estrutura do Projeto
 
 ```

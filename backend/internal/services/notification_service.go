@@ -85,6 +85,12 @@ func (s *NotificationService) NotifyOrderStatusChange(order *models.Order, newSt
 		adminTitle      string
 		adminMessage    string
 	}{
+		"created": {
+			customerTitle:   "Pedido Recebido!",
+			customerMessage: fmt.Sprintf("Recebemos seu pedido #%d e vamos confirmá-lo em breve.", order.ID),
+			adminTitle:      "Novo Pedido",
+			adminMessage:    fmt.Sprintf("O pedido #%d aguarda confirmação.", order.ID),
+		},
 		"confirmed": {
 			customerTitle:   "Pedido Confirmado!",
 			customerMessage: fmt.Sprintf("Seu pedido #%d foi confirmado e está sendo preparado.", order.ID),

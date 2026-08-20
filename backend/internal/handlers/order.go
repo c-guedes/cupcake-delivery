@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"cupcake-delivery/internal/models"
 	"cupcake-delivery/internal/services"
@@ -10,13 +11,40 @@ import (
 	"gorm.io/gorm"
 )
 
+// orderResponse mantém a compatibilidade com a tela de cliente (campos GORM
+// originais) e adiciona os nomes camelCase usados pelos painéis internos.
+type orderResponse struct {
+	models.Order
+	FrontendID          uint      `json:"id"`
+	FrontendUserID      uint      `json:"userId"`
+	FrontendUserName    string    `json:"userName"`
+	FrontendUserAddress string    `json:"userAddress"`
+	FrontendCreatedAt   time.Time `json:"createdAt"`
+}
+
+func makeOrderResponses(orders []models.Order) []orderResponse {
+	responses := make([]orderResponse, len(orders))
+	for i, order := range orders {
+		responses[i] = orderResponse{
+			Order:               order,
+			FrontendID:          order.ID,
+			FrontendUserID:      order.CustomerID,
+			FrontendUserName:    order.Customer.Name,
+			FrontendUserAddress: order.Address,
+			FrontendCreatedAt:   order.CreatedAt,
+		}
+	}
+	return responses
+}
+
 type OrderHandler struct {
 	db                  *gorm.DB
 	notificationService *services.NotificationService
 }
 
 type CreateOrderRequest struct {
-	Items []OrderItemRequest `json:"items" binding:"required,min=1"`
+	Items   []OrderItemRequest `json:"items" binding:"required,min=1"`
+	Address string             `json:"address" binding:"required"`
 }
 
 type OrderItemRequest struct {
@@ -52,6 +80,7 @@ func (h *OrderHandler) Create(c *gin.Context) {
 	order := models.Order{
 		CustomerID: userID.(uint),
 		Status:     models.StatusPending,
+		Address:    req.Address,
 	}
 
 	if err := tx.Create(&order).Error; err != nil {
@@ -95,7 +124,14 @@ func (h *OrderHandler) Create(c *gin.Context) {
 	}
 
 	// Commit da transação
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao finalizar pedido"})
+		return
+	}
+
+	if h.notificationService != nil {
+		_ = h.notificationService.NotifyOrderStatusChange(&order, "created")
+	}
 
 	c.JSON(http.StatusCreated, order)
 }
@@ -114,17 +150,17 @@ func (h *OrderHandler) List(c *gin.Context) {
 	// Filtrar pedidos baseado no role
 	switch role {
 	case string(models.CustomerType):
-		if err := h.db.Where("customer_id = ?", userID.(uint)).Order("created_at DESC").Find(&orders).Error; err != nil {
+		if err := h.db.Preload("Customer").Preload("Items.Product").Where("customer_id = ?", userID.(uint)).Order("created_at DESC").Find(&orders).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar pedidos do cliente", "details": err.Error()})
 			return
 		}
 	case string(models.DeliveryType):
-		if err := h.db.Where("delivery_id = ? OR (delivery_id IS NULL AND status IN ?)", userID.(uint), []models.OrderStatus{models.StatusReady}).Order("created_at DESC").Find(&orders).Error; err != nil {
+		if err := h.db.Preload("Customer").Preload("Items.Product").Where("delivery_id = ? OR (delivery_id IS NULL AND status IN ?)", userID.(uint), []models.OrderStatus{models.StatusReady}).Order("created_at DESC").Find(&orders).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar pedidos do entregador", "details": err.Error()})
 			return
 		}
 	case string(models.AdminType):
-		if err := h.db.Order("created_at DESC").Find(&orders).Error; err != nil {
+		if err := h.db.Preload("Customer").Preload("Items.Product").Order("created_at DESC").Find(&orders).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar todos os pedidos", "details": err.Error()})
 			return
 		}
@@ -133,12 +169,19 @@ func (h *OrderHandler) List(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, orders)
+	c.JSON(http.StatusOK, makeOrderResponses(orders))
 }
 
 func (h *OrderHandler) UpdateStatus(c *gin.Context) {
 	orderID := c.Param("id")
-	status := c.PostForm("status")
+	var request struct {
+		Status string `json:"status" form:"status" binding:"required"`
+	}
+	if err := c.ShouldBind(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Status é obrigatório"})
+		return
+	}
+	status := request.Status
 
 	userID, _ := c.Get("user_id")
 	role, _ := c.Get("type")
@@ -166,7 +209,10 @@ func (h *OrderHandler) UpdateStatus(c *gin.Context) {
 			order.DeliveryID = &deliveryID
 		}
 	case string(models.AdminType):
-		// Admin pode atualizar para qualquer status
+		if !validAdminTransition(order.Status, models.OrderStatus(status)) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Transição de status inválida"})
+			return
+		}
 	default:
 		c.JSON(http.StatusForbidden, gin.H{"error": "Acesso não autorizado"})
 		return
@@ -187,4 +233,9 @@ func (h *OrderHandler) UpdateStatus(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, order)
+}
+
+func validAdminTransition(from, to models.OrderStatus) bool {
+	return (from == models.StatusPending && to == models.StatusPreparing) ||
+		(from == models.StatusPreparing && to == models.StatusReady)
 }

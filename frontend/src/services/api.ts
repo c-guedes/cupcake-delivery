@@ -27,6 +27,27 @@ interface OrderData {
   }>;
 }
 
+// O backend ainda expõe os campos herdados do GORM (ID e CreatedAt) em PascalCase.
+// Normalizamos aqui para manter os painéis administrativo e de entrega consistentes,
+// sem quebrar a tela de cliente que já consome os campos originais.
+function normalizeOrder(order: any) {
+  const customer = order.customer ?? order.Customer;
+  return {
+    ...order,
+    id: order.id ?? order.ID,
+    userId: order.userId ?? order.customerId ?? order.CustomerID,
+    userName: order.userName ?? customer?.name,
+    userAddress: order.userAddress ?? order.address,
+    createdAt: order.createdAt ?? order.CreatedAt,
+    items: (order.items ?? order.Items ?? []).map((item: any) => ({
+      ...item,
+      id: item.id ?? item.ID,
+      productId: item.productId ?? item.ProductID,
+      productName: item.productName ?? item.product?.name ?? item.Product?.name,
+    })),
+  };
+}
+
 class ApiService {
   private baseURL: string;
   private token: string | null;
@@ -177,7 +198,8 @@ class ApiService {
   }
 
   async getOrders() {
-    return this.makeRequest('/orders');
+    const orders = await this.makeRequest('/orders');
+    return orders.map(normalizeOrder);
   }
 
   async updateOrderStatus(orderId: number, status: string) {

@@ -8,7 +8,7 @@ type Notification struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
 	UserID    uint      `json:"user_id" gorm:"not null"`
 	OrderID   *uint     `json:"order_id,omitempty"`
-	Type      string    `json:"type" gorm:"not null"`
+	Type      string    `json:"type" gorm:"type:notification_type;not null"`
 	Title     string    `json:"title" gorm:"not null"`
 	Message   string    `json:"message" gorm:"not null"`
 	IsRead    bool      `json:"is_read" gorm:"default:false"`

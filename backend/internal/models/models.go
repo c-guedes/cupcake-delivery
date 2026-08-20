@@ -17,7 +17,7 @@ type User struct {
 	Name     string   `json:"name"`
 	Email    string   `json:"email" gorm:"unique"`
 	Password string   `json:"-"` // Não será retornado no JSON
-	Type     UserType `json:"type" gorm:"type:varchar(20)"`
+	Type     UserType `json:"type" gorm:"type:user_type"`
 	Vehicle  *string  `json:"vehicle,omitempty"` // Apenas para entregadores
 }
 
@@ -45,7 +45,7 @@ type Order struct {
 	Customer   User        `json:"customer" gorm:"foreignKey:CustomerID"`
 	DeliveryID *uint       `json:"deliveryId,omitempty"`
 	Delivery   *User       `json:"delivery,omitempty" gorm:"foreignKey:DeliveryID"`
-	Status     OrderStatus `json:"status" gorm:"type:varchar(20)"`
+	Status     OrderStatus `json:"status" gorm:"type:order_status"`
 	Total      float64     `json:"total"`
 	Address    string      `json:"address"`
 	Items      []OrderItem `json:"items" gorm:"foreignKey:OrderID"`
