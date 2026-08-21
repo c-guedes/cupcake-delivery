@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:8080';
+// Em produção, o Vercel encaminha /api para o serviço Go. Em desenvolvimento,
+// mantemos o backend local para não exigir nenhuma variável de ambiente.
+const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? '/api' : 'http://localhost:8080');
 
 interface RegisterData {
   name: string;

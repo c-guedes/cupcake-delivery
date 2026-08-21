@@ -115,7 +115,9 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created
 
 -- Função para atualizar updated_at automaticamente
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+SET search_path = public
+AS $$
 BEGIN
     NEW.updated_at = CURRENT_TIMESTAMP;
     RETURN NEW;
@@ -145,7 +147,9 @@ ALTER TABLE users ADD CONSTRAINT check_delivery_vehicle
 
 -- Verificar se delivery_id é realmente um entregador
 CREATE OR REPLACE FUNCTION check_delivery_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+SET search_path = public
+AS $$
 BEGIN
     IF NEW.delivery_id IS NOT NULL THEN
         IF NOT EXISTS (
@@ -194,6 +198,14 @@ COMMENT ON COLUMN users.vehicle IS 'Informações do veículo (obrigatório para
 COMMENT ON COLUMN orders.status IS 'Status atual do pedido';
 COMMENT ON COLUMN order_items.price IS 'Preço do produto no momento da compra';
 COMMENT ON COLUMN notifications.is_read IS 'Indica se a notificação foi lida pelo usuário';
+
+-- As tabelas são consumidas exclusivamente pela API Go. O PostgREST público
+-- permanece bloqueado até que políticas específicas sejam necessárias.
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- Verificar se tudo foi criado corretamente
 SELECT 'Migração concluída com sucesso!' as status;
