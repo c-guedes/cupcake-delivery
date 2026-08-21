@@ -4,9 +4,9 @@ Revisado em 20/08/2026 contra o enunciado da atividade e os arquivos do reposit�
 
 | Exigência | Evidência no repositório | Situação |
 | --- | --- | --- |
-| Escopo, UML, IHC/mockups, dados e dicionário revisados | [UML](diagramas/README.md), [IHC validada](mockups/README.md), [banco](database/migration.sql), [dicionário](database/dicionario_dados.md) | Concluído documentalmente |
+| Escopo, UML, IHC/mockups, dados e dicionário revisados | [UML](diagramas/README.md), [IHC validada](mockups/README.md), [modelo físico](database/modelo_fisico.md), [migração](database/migration.sql), [dicionário](database/dicionario_dados.md) | Concluído documentalmente |
 | Código front-end e back-end testado | [relatório técnico](VALIDACAO_TECNICA_PIT_II.md) | Concluído tecnicamente |
-| Evidência visual de execução | [capturas técnicas](pit_ii/evidencias/README.md) | Parcial: login, cadastro, catálogo e pedido criado |
+| Evidência visual de execução | [capturas técnicas](pit_ii/evidencias/README.md) | Parcial: login, cadastro, catálogo com imagens, pedido criado e painel administrativo |
 | Repositório GitHub aberto | [repositório](https://github.com/c-guedes/cupcake-delivery) | Pendente confirmar que o repositório está público e mesclar a branch de entrega na `main` |
 | Link público da aplicação funcionando | Não há hospedagem configurada | Pendente |
 | Cinco fichas/opiniões reais em PDF e evidências | [formulário](pit_ii/formulario_cinco_testes_usuarios.pdf) e [laudo modelo](pit_ii/laudo_qualidade_template.pdf) | Pendente avaliação real; modelos não são evidência de teste realizado |

@@ -8,5 +8,7 @@ Capturas produzidas em 20/08/2026, em ambiente local com banco PostgreSQL tempor
 | `02-cadastro-cliente.png` | Cadastro de cliente concluído. |
 | `03-catalogo-cliente.png` | Catálogo carregado para o cliente. |
 | `04-pedido-criado.png` | Pedido criado pelo cliente. |
+| `05-admin-acompanhamento-pedidos.png` | Painel administrativo de acompanhamento de pedidos. |
+| `06-admin-pedido-pronto.png` | Pedido em estado pronto, após fluxo administrativo. |
 
 Estas são evidências técnicas de execução, não substituem as cinco fichas de avaliação real de usuários exigidas na atividade.

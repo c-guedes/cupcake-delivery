@@ -90,7 +90,7 @@ npm run test:watch         # Watch mode
 
 - [Diagramas UML finais validados](docs/diagramas/README.md): classes, casos de uso, sequência e banco de dados.
 - [Mockups e IHC validados](docs/mockups/README.md).
-- [Modelo físico e migração SQL](docs/database/migration.sql).
+- [Modelo físico](docs/database/modelo_fisico.md) e [migração SQL](docs/database/migration.sql).
 - [Dicionário de dados](docs/database/dicionario_dados.md).
 - [Relatório de validação técnica](docs/VALIDACAO_TECNICA_PIT_II.md).
 - [Capturas técnicas da aplicação em execução](docs/pit_ii/evidencias/README.md).
