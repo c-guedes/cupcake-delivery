@@ -17,7 +17,7 @@ func main() {
 	cfg := config.Load()
 
 	// Conectar ao banco de dados
-	db, err := database.Connect(cfg.DatabaseURL)
+	db, err := database.Connect(cfg.DatabaseURL, cfg.AutoMigrate)
 	if err != nil {
 		log.Fatalf("Erro ao conectar ao banco de dados: %v", err)
 	}

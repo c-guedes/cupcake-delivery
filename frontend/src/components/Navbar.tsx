@@ -6,7 +6,9 @@ import { useAuth } from '../contexts/AuthContext';
 import CartDropdown from './CartDropdown';
 import NotificationDropdown from './NotificationDropdown';
 import ThemeToggle from './ThemeToggle';
-import logo from '../assets/logo.png';
+// O logo também fica disponível quando o app é publicado sem enviar binários
+// duplicados ao serviço de build.
+const logo = 'https://raw.githubusercontent.com/c-guedes/cupcake-delivery/pit-ii-documentacao-validacao/frontend/src/assets/logo.png';
 
 interface NavbarProps {
   userType: 'customer' | 'delivery' | 'admin' | null;

@@ -6,22 +6,23 @@ import (
 	"gorm.io/gorm"
 )
 
-func Connect(url string) (*gorm.DB, error) {
+func Connect(url string, autoMigrate bool) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	// Auto Migrate os modelos
-	err = db.AutoMigrate(
-		&models.User{},
-		&models.Product{},
-		&models.Order{},
-		&models.OrderItem{},
-		&models.Notification{},
-	)
-	if err != nil {
-		return nil, err
+	if autoMigrate {
+		err = db.AutoMigrate(
+			&models.User{},
+			&models.Product{},
+			&models.Order{},
+			&models.OrderItem{},
+			&models.Notification{},
+		)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return db, nil
