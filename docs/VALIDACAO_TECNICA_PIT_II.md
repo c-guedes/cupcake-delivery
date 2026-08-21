@@ -8,7 +8,8 @@ Data: 20/08/2026
 | Banco, migração e dicionário | [modelo físico](database/modelo_fisico.md), [migração SQL](database/migration.sql) e [dicionário](database/dicionario_dados.md) | Executado novamente em PostgreSQL 17 limpo |
 | Back-end | `go test ./...` | Aprovado |
 | Front-end | `npm run build` e `npm test -- --runInBand` | Aprovado; 14 testes |
-| Fluxo integrado | API local, PostgreSQL e [capturas técnicas](pit_ii/evidencias/README.md) | Aprovado |
+| Fluxo integrado | API, PostgreSQL e [capturas técnicas](pit_ii/evidencias/README.md) | Aprovado localmente e em produção |
+| Produção pública | [Vercel](https://cupcake-delivery-pit-ii.vercel.app), [health](https://cupcake-delivery-pit-ii.vercel.app/api/health) e [products](https://cupcake-delivery-pit-ii.vercel.app/api/products) | Retestado: HTTP 200 nos quatro pontos (raiz, login, health e catálogo) |
 
 ## Banco de dados
 
@@ -26,9 +27,11 @@ Os diagramas final de classes, casos de uso, sequência e banco foram renderizad
 
 O catálogo foi executado novamente após a troca dos placeholders. As seis imagens de cupcake locais foram exibidas corretamente, assim como o fluxo de pedido criado e o pedido pronto no painel administrativo. As capturas estão em [evidências técnicas](pit_ii/evidencias/README.md).
 
+## Produção
+
+A aplicação é entregue como serviço público no Vercel. O front-end React é servido na raiz e a API Go responde sob o prefixo `/api`; o PostgreSQL é hospedado no Supabase, com credencial limitada à aplicação. A verificação de produção realizada em 20/08/2026 confirmou `GET /`, `GET /login`, `GET /api/health` e `GET /api/products` com HTTP 200.
+
 ## Pendências externas
 
 - cinco avaliações reais;
-- capturas de tela;
-- link público de produção;
 - vídeo narrado.

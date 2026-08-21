@@ -1,0 +1,27 @@
+@startuml diagrama_atividade_pedido_final
+!theme plain
+title Diagrama de Atividades - Fluxo de Pedido Validado
+
+start
+:Cliente autenticado seleciona cupcakes;
+:Adiciona itens ao carrinho local;
+:Informa o endereço de entrega;
+if (Carrinho e endereço válidos?) then (sim)
+  :API cria pedido com status pending;
+  :Grava itens, total e notificação inicial;
+  :Administrador visualiza o pedido;
+  :Atualiza status para preparing;
+  :Atualiza status para ready;
+  :Entregador visualiza pedido pronto;
+  :Atualiza status para delivering
+  e é associado ao pedido;
+  :Atualiza status para delivered;
+  :API cria notificações em cada mudança;
+  :Cliente acompanha pedido concluído;
+  stop
+else (não)
+  :API retorna erro de validação;
+  :Interface informa o ajuste necessário;
+  stop
+endif
+@enduml

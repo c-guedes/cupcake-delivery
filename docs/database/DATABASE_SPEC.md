@@ -7,11 +7,11 @@ Sistema de Delivery de Cupcakes - Documentação Técnica do Banco de Dados
 O banco de dados foi projetado para suportar um sistema completo de delivery de cupcakes, incluindo gestão de usuários, produtos, pedidos e notificações em tempo real.
 
 ### 🔧 Tecnologia
-- **SGBD**: PostgreSQL 12+ (Supabase)
+- **SGBD**: PostgreSQL 17 (Supabase)
 - **ORM**: GORM (Go)
-- **Extensões**: uuid-ossp, pgcrypto
+- **Extensões**: uuid-ossp
 - **Hospedagem**: Supabase Cloud Database
-- **URL**: https://msubfzrwhvwdwixfskuk.supabase.co
+- **Acesso**: privado pela API Go; a URL de conexão não é publicada.
 
 ## 📊 Estrutura das Tabelas
 
@@ -212,9 +212,8 @@ INSERT INTO users (name, email, password, type) VALUES
 4. Inserir dados iniciais
 
 ### Backup e Recovery
-- **Backup diário**: Dump completo do banco
-- **Log de transações**: Ativado para recovery pontual
-- **Monitoramento**: Índices e performance de queries
+- **Backup**: responsabilidade do serviço gerenciado Supabase, conforme plano contratado.
+- **Recuperação e monitoramento**: configurados no provedor; não há promessa de rotina própria no repositório.
 
 ### Monitoramento
 - **Slow queries**: Identificar queries lentas
@@ -230,11 +229,8 @@ INSERT INTO users (name, email, password, type) VALUES
 3. **Notificações não lidas**: `SELECT * FROM notifications WHERE user_id = ? AND is_read = false`
 4. **Histórico de pedidos**: `SELECT * FROM orders WHERE customer_id = ? ORDER BY created_at DESC`
 
-### Performance Esperada
-- **Listagem de produtos**: < 10ms
-- **Criação de pedido**: < 50ms
-- **Atualização de status**: < 30ms
-- **Busca de notificações**: < 20ms
+### Medição de desempenho
+O projeto valida correção funcional e integridade das operações. Não declara metas de latência sem uma medição controlada de carga.
 
 ## 🚀 Escalabilidade
 
@@ -244,10 +240,8 @@ INSERT INTO users (name, email, password, type) VALUES
 3. **Cache**: Redis para sessões e dados frequentes
 4. **Arquivamento**: Dados antigos em tabelas históricas
 
-### Limites Atuais
-- **Usuários**: Até 100k sem problemas
-- **Pedidos**: Até 1M com os índices atuais
-- **Notificações**: Limpeza automática após 90 dias
+### Limites atuais
+Os limites dependem do plano e da capacidade do provedor. Não há limpeza automática de notificações implementada.
 
 ---
 
@@ -265,27 +259,24 @@ Esta especificação reflete a implementação atual usando GORM com PostgreSQL.
 O sistema foi configurado para usar Supabase como banco de dados PostgreSQL gerenciado:
 
 ### 🔗 **Conexão**
-- **URL**: https://msubfzrwhvwdwixfskuk.supabase.co
-- **Banco**: PostgreSQL 15+ na nuvem
-- **SSL**: Obrigatório (require)
+- **Banco**: PostgreSQL 17 na nuvem.
+- **SSL**: obrigatório na conexão de produção.
+- **Segredo**: `DATABASE_URL` permanece configurada somente no ambiente do Vercel.
 
 ### 🛡️ **Segurança**
 - **Row Level Security (RLS)**: Habilitado em todas as tabelas
-- **Policies**: Usuários acessam apenas seus dados
-- **JWT**: Autenticação integrada com Supabase Auth
+- **Policies**: o acesso direto público permanece bloqueado; a API usa uma role limitada.
+- **JWT**: emitido e validado pela própria API Go.
 
 ### 📊 **Vantagens**
-- ✅ Backup automático
-- ✅ Escalabilidade automática  
-- ✅ Dashboard visual
-- ✅ Real-time subscriptions
-- ✅ API REST automática
+- ✅ PostgreSQL gerenciado
+- ✅ Console administrativo do provedor
+- ✅ TLS na conexão de produção
 
 ### 🔧 **Scripts de Migração**
-- `supabase_migration.sql` - Migração completa para Supabase
-- `migration.sql` - Migração para PostgreSQL local (Docker)
+- `migration.sql` - Migração única usada tanto no PostgreSQL local quanto no Supabase
 
 ### 📚 **Documentação Relacionada**
-- `SUPABASE_INTEGRATION.md` - Guia completo de integração
-- `.env.example` - Configurações de ambiente
-- `frontend/.env.example` - Configurações do frontend
+- `modelo_fisico.md` - Modelo físico e relacionamentos
+- `dicionario_dados.md` - Dicionário de dados
+- `migration.sql` - Estrutura executável e sementes

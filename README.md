@@ -88,7 +88,9 @@ npm run test:watch         # Watch mode
 
 ## 📚 Documentação para entrega — PIT II
 
-- [Diagramas UML finais validados](docs/diagramas/README.md): classes, casos de uso, sequência e banco de dados.
+- [Aplicação publicada](https://cupcake-delivery-pit-ii.vercel.app) — front-end, API Go e PostgreSQL hospedado.
+
+- [Diagramas UML finais validados](docs/diagramas/README.md): classes, casos de uso, sequência, atividades e banco de dados.
 - [Mockups e IHC validados](docs/mockups/README.md).
 - [Modelo físico](docs/database/modelo_fisico.md) e [migração SQL](docs/database/migration.sql).
 - [Dicionário de dados](docs/database/dicionario_dados.md).

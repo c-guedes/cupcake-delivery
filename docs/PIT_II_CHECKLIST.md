@@ -6,21 +6,21 @@ Este documento separa o que foi comprovado no repositório do que ainda precisa 
 
 | Entrega exigida | Evidência encontrada | Situação |
 | --- | --- | --- |
-| Escopo e ideia revisados | `DOCUMENTACAO_PLANEJAMENTO_COMPLETA.md` compara planejamento e MVP | Concluído, precisa remover promessas não implementadas |
-| UML revisada | Diagramas de classe, caso de uso, sequência e banco em `docs/diagramas/` | Parcial: coexistem versões antigas e finais |
-| IHC e mockups | Mockups e interface React responsiva | Parcial: validar em execução antes de registrar como evidência |
-| Projeto conceitual, lógico e físico | `docs/database/` com SQL, migração e dicionário | Parcial: validar migração no PostgreSQL |
+| Escopo e ideia revisados | Documentação consolidada em `docs/` e evidências do MVP | Concluído |
+| UML revisada | Versões finais identificadas em `docs/diagramas/README.md` | Concluído e renderizado visualmente |
+| IHC e mockups | `docs/mockups/ihc_validada.html` e interface publicada | Concluído; somente fluxos implementados são apresentados |
+| Projeto conceitual, lógico e físico | `docs/database/` com SQL, modelo físico e dicionário | Concluído; migração validada em PostgreSQL |
 | Dicionário de dados | `docs/database/dicionario_dados.md` | Concluído documentalmente |
 
 ## Situação 2 - Solução funcional
 
 | Entrega exigida | Evidência encontrada | Situação |
 | --- | --- | --- |
-| Front-end | React, TypeScript, Vite e Tailwind em `frontend/` | Pendente de build e execução |
-| Back-end | Go, Gin, GORM e PostgreSQL em `backend/` | Em ajuste e pendente de integração com banco |
+| Front-end | React, TypeScript, Vite e Tailwind em `frontend/` | Build, testes e produção aprovados |
+| Back-end | Go, Gin, GORM e PostgreSQL em `backend/` | Testes, integração e produção aprovados |
 | Arquitetura em camadas/MVC | handlers, services, models e middleware | Parcial |
-| Testes | Testes Go e Jest presentes | Back-end corrigido para voltar a executar; front pendente de validação |
-| Git público | Repositórios remotos configurados | Pendente confirmar acesso público e links de produção |
+| Testes | Testes Go e Jest presentes | `go test ./...`, `npm test` e `npm run build` aprovados |
+| Git público | [GitHub](https://github.com/c-guedes/cupcake-delivery) e [produção](https://cupcake-delivery-pit-ii.vercel.app) | Repositório público e aplicação ativa; falta mesclar a branch final na `main` |
 
 ## Situação 3 - Validação e qualidade
 
