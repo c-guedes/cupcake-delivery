@@ -35,37 +35,37 @@ func main() {
 			Name:        "Cupcake de Chocolate",
 			Description: "Delicioso cupcake de chocolate com cobertura de chocolate",
 			Price:       8.50,
-			ImageURL:    "https://via.placeholder.com/300x300/8B4513/FFFFFF?text=Chocolate",
+			ImageURL:    "/images/cupcakes/chocolate.png",
 		},
 		{
 			Name:        "Cupcake de Baunilha",
 			Description: "Cupcake clássico de baunilha com cobertura cremosa",
 			Price:       7.00,
-			ImageURL:    "https://via.placeholder.com/300x300/F5DEB3/000000?text=Baunilha",
+			ImageURL:    "/images/cupcakes/baunilha.png",
 		},
 		{
 			Name:        "Cupcake Red Velvet",
 			Description: "Cupcake red velvet com cream cheese",
 			Price:       9.00,
-			ImageURL:    "https://via.placeholder.com/300x300/DC143C/FFFFFF?text=Red+Velvet",
+			ImageURL:    "/images/cupcakes/red-velvet.png",
 		},
 		{
 			Name:        "Cupcake de Morango",
 			Description: "Cupcake de morango com pedaços de morango real",
 			Price:       8.00,
-			ImageURL:    "https://via.placeholder.com/300x300/FFB6C1/000000?text=Morango",
+			ImageURL:    "/images/cupcakes/morango.png",
 		},
 		{
 			Name:        "Cupcake de Limão",
 			Description: "Cupcake refrescante de limão com cobertura cítrica",
 			Price:       7.50,
-			ImageURL:    "https://via.placeholder.com/300x300/FFFF00/000000?text=Limao",
+			ImageURL:    "/images/cupcakes/limao.png",
 		},
 		{
 			Name:        "Cupcake de Coco",
 			Description: "Cupcake tropical de coco com flocos de coco",
 			Price:       8.50,
-			ImageURL:    "https://via.placeholder.com/300x300/FFFFFF/000000?text=Coco",
+			ImageURL:    "/images/cupcakes/coco.png",
 		},
 	}
 

@@ -181,12 +181,12 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Produtos iniciais
 INSERT INTO products (name, description, price, image_url) VALUES 
-('Cupcake de Chocolate', 'Delicioso cupcake de chocolate com cobertura de brigadeiro', 8.50, 'https://via.placeholder.com/300x300?text=Chocolate'),
-('Cupcake de Morango', 'Cupcake de baunilha com cobertura de morango e pedaços da fruta', 9.00, 'https://via.placeholder.com/300x300?text=Morango'),
-('Cupcake Red Velvet', 'Clássico red velvet com cream cheese', 10.50, 'https://via.placeholder.com/300x300?text=Red+Velvet'),
-('Cupcake de Limão', 'Cupcake cítrico com cobertura de limão siciliano', 8.00, 'https://via.placeholder.com/300x300?text=Limao'),
-('Cupcake de Cenoura', 'Cupcake de cenoura com cobertura de chocolate', 7.50, 'https://via.placeholder.com/300x300?text=Cenoura'),
-('Cupcake de Coco', 'Cupcake de coco com cobertura cremosa e coco ralado', 9.50, 'https://via.placeholder.com/300x300?text=Coco')
+('Cupcake de Chocolate', 'Delicioso cupcake de chocolate com cobertura de brigadeiro', 8.50, '/images/cupcakes/chocolate.png'),
+('Cupcake de Morango', 'Cupcake de baunilha com cobertura de morango e pedaços da fruta', 9.00, '/images/cupcakes/morango.png'),
+('Cupcake Red Velvet', 'Clássico red velvet com cream cheese', 10.50, '/images/cupcakes/red-velvet.png'),
+('Cupcake de Limão', 'Cupcake cítrico com cobertura de limão siciliano', 8.00, '/images/cupcakes/limao.png'),
+('Cupcake de Cenoura', 'Cupcake de cenoura com cobertura de chocolate', 7.50, '/images/cupcakes/cenoura.png'),
+('Cupcake de Coco', 'Cupcake de coco com cobertura cremosa e coco ralado', 9.50, '/images/cupcakes/coco.png')
 ON CONFLICT DO NOTHING;
 
 -- Comentários nas tabelas
