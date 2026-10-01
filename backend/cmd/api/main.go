@@ -12,6 +12,65 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func registerRoutes(
+	r gin.IRouter,
+	cfg *config.Config,
+	authHandler *handlers.AuthHandler,
+	productHandler *handlers.ProductHandler,
+	orderHandler *handlers.OrderHandler,
+	notificationHandler *handlers.NotificationHandler,
+) {
+	// Rota de health check
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
+	// Rotas de autenticaÃ§Ã£o
+	r.POST("/register", authHandler.Register)
+	r.POST("/login", authHandler.Login)
+
+	// Rotas de produtos
+	products := r.Group("/products")
+	{
+		products.GET("", productHandler.List)
+		products.GET("/:id", productHandler.Get)
+
+		// Rotas protegidas para admin
+		adminProducts := products.Group("")
+		adminProducts.Use(middleware.AuthMiddleware(cfg.JWTSecret), middleware.TypeMiddleware(models.AdminType))
+		{
+			adminProducts.POST("", productHandler.Create)
+			adminProducts.PUT("/:id", productHandler.Update)
+			adminProducts.DELETE("/:id", productHandler.Delete)
+		}
+	}
+
+	// Rotas de pedidos (todas precisam de autenticaÃ§Ã£o)
+	orders := r.Group("/orders")
+	orders.Use(middleware.AuthMiddleware(cfg.JWTSecret))
+	{
+		// Rotas para clientes
+		orders.POST("", orderHandler.Create)
+		orders.GET("", orderHandler.List) // Lista filtrada por tipo de usuÃ¡rio
+
+		// Rota de atualizaÃ§Ã£o de status (admin e entregadores)
+		orders.PUT("/:id/status", orderHandler.UpdateStatus)
+	}
+
+	// Rotas de notificaÃ§Ãµes (todas precisam de autenticaÃ§Ã£o)
+	notifications := r.Group("/notifications")
+	notifications.Use(middleware.AuthMiddleware(cfg.JWTSecret))
+	{
+		notifications.GET("", notificationHandler.GetNotifications)
+		notifications.GET("/unread-count", notificationHandler.GetUnreadCount)
+		notifications.PUT("/:id/read", notificationHandler.MarkAsRead)
+		notifications.PUT("/mark-all-read", notificationHandler.MarkAllAsRead)
+
+		// Rota para criar notificaÃ§Ã£o de teste (apenas para desenvolvimento)
+		notifications.POST("/test", notificationHandler.CreateTestNotification)
+	}
+}
+
 func main() {
 	// Carregar configurações
 	cfg := config.Load()
@@ -96,6 +155,8 @@ func main() {
 		// Rota para criar notificação de teste (apenas para desenvolvimento)
 		notifications.POST("/test", notificationHandler.CreateTestNotification)
 	}
+
+	registerRoutes(r.Group("/api"), cfg, authHandler, productHandler, orderHandler, notificationHandler)
 
 	// Iniciar servidor
 	log.Printf("Servidor rodando na porta %s", cfg.Port)
