@@ -28,13 +28,6 @@ interface Order {
   }>;
 }
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  userType: string;
-}
-
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
     pending: 'Pendente',
@@ -49,11 +42,10 @@ const getStatusLabel = (status: string) => {
 };
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'users'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
   const [orderFilterTab, setOrderFilterTab] = useState<'pending' | 'inProgress' | 'completed'>('pending');
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -81,8 +73,7 @@ export default function AdminDashboard() {
 
   const tabTitles = {
     'products': 'Gerenciar Produtos',
-    'orders': 'Gerenciar Pedidos',
-    'users': 'Gerenciar Usuários'
+    'orders': 'Gerenciar Pedidos'
   };
   
   usePageTitle(getPageTitle(), 'admin');
@@ -92,8 +83,6 @@ export default function AdminDashboard() {
       loadProducts();
     } else if (activeTab === 'orders') {
       loadOrders();
-    } else if (activeTab === 'users') {
-      loadUsers();
     }
   }, [activeTab]);
 
@@ -120,18 +109,6 @@ export default function AdminDashboard() {
       setOrders(sortedOrders);
     } catch (error) {
       console.error('Erro ao carregar pedidos:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      // Implementar endpoint de usuários no backend se necessário
-      setUsers([]); // Por enquanto vazio
-    } catch (error) {
-      console.error('Erro ao carregar usuários:', error);
     } finally {
       setLoading(false);
     }
@@ -226,16 +203,6 @@ export default function AdminDashboard() {
               }`}
             >
               Acompanhar Pedidos
-            </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`px-4 py-2 rounded-md ${
-                activeTab === 'users'
-                  ? 'bg-pink-600 text-white'
-                  : 'text-gray-600 hover:text-pink-600'
-              }`}
-            >
-              Gerenciar Usuários
             </button>
           </nav>
         </div>
@@ -513,22 +480,6 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
-          </div>
-        )}
-
-        {activeTab === 'users' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4">Gerenciar Usuários</h2>
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
-              <p>Funcionalidade em desenvolvimento. Por enquanto, os usuários podem ser visualizados através dos pedidos.</p>
-            </div>
-            {loading ? (
-              <p>Carregando usuários...</p>
-            ) : (
-              <div className="text-gray-500">
-                <p>Esta seção será implementada para gerenciar usuários registrados no sistema.</p>
-              </div>
-            )}
           </div>
         )}
 

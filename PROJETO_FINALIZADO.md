@@ -16,7 +16,7 @@ O **Sistema de Delivery de Cupcakes** foi desenvolvido como uma aplicação web 
 - [x] Documentação técnica completa
 
 ### ✅ **Objetivos Funcionais**
-- [x] Gestão de usuários (Cliente, Entregador, Administrador)
+- [x] Autenticação e perfis de usuários (Cliente, Entregador, Administrador)
 - [x] Catálogo de produtos dinâmico
 - [x] Sistema de carrinho de compras
 - [x] Fluxo completo de pedidos
@@ -98,7 +98,7 @@ frontend/
 - Gestão completa de produtos
 - Visualização de todos os pedidos
 - Métricas e relatórios
-- Gestão de usuários
+- Acompanhamento de pedidos e gestão de produtos
 
 ### **🔔 Sistema de Notificações**
 - Notificações em tempo real

@@ -19,7 +19,6 @@ Guia completo para usar o Sistema de Delivery de Cupcakes.
 
 ### 👨‍💼 Administrador
 - Gerenciar produtos
-- Gerenciar usuários
 - Acompanhar todos os pedidos
 - Visualizar relatórios
 
@@ -145,12 +144,6 @@ Visão geral com:
    - Cliente
 3. Clique em um pedido para ver detalhes
 4. Atualize status conforme necessário
-
-### Gerenciando Usuários
-1. Vá para **"Usuários"**
-2. Veja lista completa de usuários
-3. Filtre por tipo (cliente, entregador, admin)
-4. Edite permissões se necessário
 
 ## 🎨 Personalizando a Interface
 

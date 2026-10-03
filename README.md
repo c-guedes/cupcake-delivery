@@ -6,7 +6,7 @@ Sistema completo de delivery de cupcakes desenvolvido como monorepo com React, G
 
 Este projeto implementa um sistema de delivery de cupcakes com três tipos de usuários:
 - **Clientes**: Fazem pedidos e acompanham entregas
-- **Administradores**: Gerenciam produtos, pedidos e usuários  
+- **Administradores**: Gerenciam produtos e acompanham pedidos  
 - **Entregadores**: Recebem e entregam pedidos
 
 ## 🏗️ Arquitetura
