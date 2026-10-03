@@ -39,7 +39,7 @@
       }
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": {
         "service": "web",
         "path": "/index.html"
