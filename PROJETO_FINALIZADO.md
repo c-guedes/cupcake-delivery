@@ -97,7 +97,6 @@ frontend/
 #### **Administrador:**
 - Gestão completa de produtos
 - Visualização de todos os pedidos
-- Métricas e relatórios
 - Acompanhamento de pedidos e gestão de produtos
 
 ### **🔔 Sistema de Notificações**

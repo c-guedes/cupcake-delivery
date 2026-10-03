@@ -20,7 +20,6 @@ Guia completo para usar o Sistema de Delivery de Cupcakes.
 ### 👨‍💼 Administrador
 - Gerenciar produtos
 - Acompanhar todos os pedidos
-- Visualizar relatórios
 
 ## 🚀 Primeiros Passos
 
@@ -65,8 +64,7 @@ Guia completo para usar o Sistema de Delivery de Cupcakes.
 ### Fazendo um Pedido
 1. Com itens no carrinho, clique em **"Finalizar Pedido"**
 2. Preencha o endereço de entrega
-3. Escolha a forma de pagamento
-4. Revise os dados e clique em **"Confirmar Pedido"**
+3. Revise os dados e clique em **"Confirmar Pedido"**
 
 ### Acompanhando Pedidos
 1. No menu, clique em **"Meus Pedidos"**
@@ -86,24 +84,21 @@ Guia completo para usar o Sistema de Delivery de Cupcakes.
 
 ### Dashboard do Entregador
 Após fazer login, você verá:
-- Pedidos disponíveis para entrega
-- Seus pedidos em andamento
+- Pedidos prontos para entrega
+- Pedidos em andamento atribuídos ao entregador
 - Histórico de entregas
 
-### Aceitando uma Entrega
-1. Na seção **"Pedidos Disponíveis"**
-2. Clique em **"Ver Detalhes"** no pedido
-3. Verifique endereço e valor
-4. Clique em **"Aceitar Entrega"**
+### Iniciando uma Entrega
+1. Na lista de pedidos prontos, localize o pedido desejado
+2. Clique na ação para iniciar a entrega
+3. O pedido passa para o status **"Em entrega"**
 
 ### Durante a Entrega
-1. O pedido aparece em **"Minhas Entregas"**
-2. Clique em **"Iniciar Entrega"** quando sair para entregar
-3. Use o mapa/endereço fornecido
-4. Quando chegar, clique em **"Marcar como Entregue"**
+1. Verifique o endereço exibido no pedido
+2. Realize a entrega
+3. Quando chegar, clique em **"Marcar como Entregue"**
 
 ### Status da Entrega
-- **Aceito**: Você aceitou o pedido
 - **A caminho**: Você iniciou a entrega
 - **Entregue**: Pedido foi entregue ao cliente
 
@@ -111,10 +106,9 @@ Após fazer login, você verá:
 
 ### Dashboard Administrativo
 Visão geral com:
-- Total de pedidos do dia
-- Receita
-- Produtos mais vendidos
-- Pedidos por status
+- Lista de pedidos por status
+- Atualização de pedidos em preparo
+- Cadastro e manutenção de produtos
 
 ### Gerenciando Produtos
 
@@ -182,7 +176,6 @@ Visão geral com:
 #### Para Administradores
 - Novos pedidos
 - Pedidos prontos para entrega
-- Relatórios diários
 
 ### Consultando Notificações
 1. Clique no ícone de sino no menu superior
@@ -194,7 +187,7 @@ Visão geral com:
 ### Cliente
 
 **Q: Como cancelar um pedido?**
-A: Pedidos podem ser cancelados apenas no status "Pendente". Vá em "Meus Pedidos" e clique em "Cancelar".
+A: O cancelamento pelo cliente não faz parte do escopo implementado. Caso necessário, o fluxo deve ser tratado fora do sistema.
 
 **Q: Quanto tempo demora a entrega?**
 A: Normalmente 30-60 minutos, dependendo da distância e demanda.
@@ -202,27 +195,10 @@ A: Normalmente 30-60 minutos, dependendo da distância e demanda.
 **Q: Como altero meu endereço?**
 A: Informe o endereço correto no momento de finalizar um novo pedido.
 
-**Q: Esqueci minha senha**
-A: No protótipo entregue, a recuperação automática de senha não faz parte do escopo.
-
 ### Entregador
 
 **Q: Como calcular a rota?**
 A: Clique no endereço de entrega para abrir no Google Maps ou app de sua preferência.
-
-**Q: Posso recusar uma entrega?**
-A: Sim, mas apenas antes de aceitar. Após aceitar, você deve entregar ou contactar o suporte.
-
-**Q: Como recebo o pagamento?**
-A: Os pagamentos são processados semanalmente via PIX ou transferência bancária.
-
-### Administrador
-
-**Q: Como gerar relatórios?**
-A: Vá para "Relatórios" e escolha o período e tipo de relatório desejado.
-
-**Q: Como adicionar outro administrador?**
-A: Em "Usuários", encontre o usuário e altere o tipo para "Administrador".
 
 ## 🆘 Suporte e Ajuda
 

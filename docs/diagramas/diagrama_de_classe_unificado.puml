@@ -1,97 +1,120 @@
-@startuml DiagramaDeClasseUnificado
-'skinparam linetype ortho
+@startuml diagrama_de_classe_unificado
+!theme plain
+title Diagrama de Classes - Implementação Validada
 
-class Usuario {
-  +UUID id
-  +String nome
-  +String email
-  +String senha
+enum UserType {
+  customer
+  delivery
+  admin
 }
 
-class Cliente extends Usuario {
-  +String telefone
+enum OrderStatus {
+  pending
+  preparing
+  ready
+  delivering
+  delivered
 }
 
-class Administrador extends Usuario {
+class User {
+  +ID: uint
+  +Name: string
+  +Email: string
+  +Password: string
+  +Type: UserType
+  +Vehicle: *string
 }
 
-class Entregador extends Usuario {
-  +String placaVeiculo
+class Product {
+  +ID: uint
+  +Name: string
+  +Description: string
+  +Price: float64
+  +ImageURL: string
 }
 
-class Cupcake {
-  +UUID id
-  +String sabor
-  +Decimal preco
-  +String urlImagem
+class Order {
+  +ID: uint
+  +CustomerID: uint
+  +DeliveryID: *uint
+  +Status: OrderStatus
+  +Total: float64
+  +Address: string
 }
 
-class Carrinho {
-  +UUID id
-  +DateTime criadoEm
+class OrderItem {
+  +ID: uint
+  +OrderID: uint
+  +ProductID: uint
+  +Quantity: int
+  +Price: float64
 }
 
-class ItemCarrinho {
-  +Int quantidade
-  +Decimal subtotal
+class Notification {
+  +ID: uint
+  +UserID: uint
+  +OrderID: *uint
+  +Type: string
+  +Title: string
+  +Message: string
+  +IsRead: bool
 }
 
-class Pedido {
-  +UUID id
-  +DateTime dataHora
-  +Decimal total
-  +String status
+class AuthHandler {
+  +Register(context)
+  +Login(context)
 }
 
-class PedidoItem {
-  +Int quantidade
-  +Decimal subtotal
+class ProductHandler {
+  +List(context)
+  +Get(context)
+  +Create(context)
+  +Update(context)
+  +Delete(context)
 }
 
-class EnderecoEntrega {
-  +UUID id
-  +String cep
-  +String rua
-  +String numero
-  +String complemento
+class OrderHandler {
+  +Create(context)
+  +List(context)
+  +UpdateStatus(context)
 }
 
-class Pagamento {
-  +UUID id
-  +String metodo
-  +String status
-  +String transacaoId
+class NotificationHandler {
+  +GetNotifications(context)
+  +GetUnreadCount(context)
+  +MarkAsRead(context)
+  +MarkAllAsRead(context)
 }
 
-class ProvaEntrega {
-  +UUID id
-  +String fotoUrl
-  +DateTime dataHora
+class NotificationService {
+  +CreateNotification(data)
+  +GetUserNotifications(userID, limit)
+  +NotifyOrderStatusChange(order, status)
 }
 
-class Notificacao {
-    +UUID id
-    +String tipo
-    +String destino
-    +String mensagem
+class AuthMiddleware {
+  +AuthMiddleware(jwtSecret)
 }
 
-' Relacionamentos
-Cliente "1" -- "1" Carrinho
-Cliente "1" -- "*" Pedido
-Cliente "1" -- "*" EnderecoEntrega
+class TypeMiddleware {
+  +TypeMiddleware(requiredType)
+}
 
-Carrinho "1" -- "*" ItemCarrinho
-ItemCarrinho "*" -- "1" Cupcake
+User "1" -- "0..*" Order : customer
+User "0..1" -- "0..*" Order : delivery
+Order "1" -- "1..*" OrderItem
+Product "1" -- "0..*" OrderItem
+User "1" -- "0..*" Notification
+Order "0..1" -- "0..*" Notification
 
-Pedido "1" -- "*" PedidoItem
-PedidoItem "*" -- "1" Cupcake
-Pedido "1" -- "1" EnderecoEntrega
-Pedido "1" -- "1" Pagamento
-Pedido "1" -- "0..1" ProvaEntrega
-Pedido "*" -- "1" Entregador : atribuído
-Pedido "1" -- "*" Notificacao : gera
+OrderHandler --> NotificationService
+NotificationHandler --> NotificationService
+AuthHandler --> User
+ProductHandler --> Product
+AuthMiddleware --> User
+TypeMiddleware --> User
 
-Administrador "1" -- "*" Pedido : gerencia
-
+note bottom of Order
+Fluxo validado: pending -> preparing -> ready -> delivering -> delivered.
+end note
 @enduml
