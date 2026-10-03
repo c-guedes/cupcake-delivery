@@ -107,13 +107,6 @@ export default function Navbar({ userType }: NavbarProps) {
                     <div className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100 border-b dark:border-dark-600">
                       {user?.name || 'Usuário'}
                     </div>
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      Perfil
-                    </Link>
                     <button
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"

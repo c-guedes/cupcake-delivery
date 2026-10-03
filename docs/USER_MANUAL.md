@@ -152,10 +152,6 @@ Visão geral com:
 - A preferência é salva automaticamente
 - Funciona em todas as páginas
 
-### Notificações
-- Configure suas preferências em **"Perfil"** → **"Notificações"**
-- Escolha quais tipos de notificação receber
-
 ## 📱 Usando no Celular
 
 ### App Responsivo
@@ -188,10 +184,10 @@ Visão geral com:
 - Pedidos prontos para entrega
 - Relatórios diários
 
-### Configurando Notificações
-1. Vá para **"Perfil"** → **"Configurações"**
-2. Escolha quais notificações receber
-3. Configure horários (se aplicável)
+### Consultando Notificações
+1. Clique no ícone de sino no menu superior
+2. Veja os avisos relacionados ao status dos pedidos
+3. Use as notificações como apoio para acompanhar mudanças importantes
 
 ## ❓ Perguntas Frequentes
 
@@ -204,10 +200,10 @@ A: Pedidos podem ser cancelados apenas no status "Pendente". Vá em "Meus Pedido
 A: Normalmente 30-60 minutos, dependendo da distância e demanda.
 
 **Q: Como altero meu endereço?**
-A: Vá em "Perfil" → "Endereços" para gerenciar seus endereços salvos.
+A: Informe o endereço correto no momento de finalizar um novo pedido.
 
 **Q: Esqueci minha senha**
-A: Na tela de login, clique em "Esqueci minha senha" e siga as instruções.
+A: No protótipo entregue, a recuperação automática de senha não faz parte do escopo.
 
 ### Entregador
 
