@@ -58,6 +58,7 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [productPendingDelete, setProductPendingDelete] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
@@ -167,13 +168,12 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteProduct = async (id: number) => {
-    if (window.confirm('Deseja realmente excluir este produto?')) {
-      try {
-        await api.deleteProduct(id);
-        loadProducts();
-      } catch (error) {
-        console.error('Erro ao excluir produto:', error);
-      }
+    try {
+      await api.deleteProduct(id);
+      setProductPendingDelete(null);
+      loadProducts();
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
     }
   };
 
@@ -294,11 +294,11 @@ export default function AdminDashboard() {
                           >
                             Editar
                           </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product.id)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            Excluir
+                        <button
+                          onClick={() => setProductPendingDelete(product)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Excluir
                           </button>
                         </td>
                       </tr>
@@ -483,6 +483,33 @@ export default function AdminDashboard() {
                   className="rounded bg-pink-600 px-4 py-2 font-semibold text-white hover:bg-pink-700"
                 >
                   Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {productPendingDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+              <h3 className="mb-2 text-xl font-bold text-gray-900">Excluir produto?</h3>
+              <p className="mb-6 text-gray-600">
+                Tem certeza que deseja excluir “{productPendingDelete.name}”? Essa ação remove o produto do catálogo administrativo.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setProductPendingDelete(null)}
+                  className="rounded border border-gray-300 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteProduct(productPendingDelete.id)}
+                  className="rounded bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700"
+                >
+                  Excluir
                 </button>
               </div>
             </div>

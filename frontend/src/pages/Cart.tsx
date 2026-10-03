@@ -29,6 +29,11 @@ export default function Cart() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [ordering, setOrdering] = useState(false);
+  const [notice, setNotice] = useState<{
+    title: string;
+    message: string;
+    onClose?: () => void;
+  } | null>(null);
   const { cartItems: rawCartItems, updateQuantity: updateCartQuantity, removeFromCart, clearCart } = useCart();
   const [address, setAddress] = useState({
     street: '',
@@ -79,7 +84,10 @@ export default function Cart() {
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
-      alert('Carrinho vazio!');
+      setNotice({
+        title: 'Carrinho vazio',
+        message: 'Adicione pelo menos um cupcake antes de finalizar o pedido.'
+      });
       return;
     }
 
@@ -98,10 +106,16 @@ export default function Cart() {
       // Limpar carrinho
       clearCart();
       
-      alert('Pedido realizado com sucesso!');
-      navigate('/customer');
+      setNotice({
+        title: 'Pedido realizado com sucesso!',
+        message: 'Seu pedido foi registrado e já pode ser acompanhado na área do cliente.',
+        onClose: () => navigate('/customer')
+      });
     } catch (error: any) {
-      alert('Erro ao fazer pedido: ' + (error.message || 'Tente novamente'));
+      setNotice({
+        title: 'Erro ao fazer pedido',
+        message: error.message || 'Tente novamente em alguns instantes.'
+      });
     } finally {
       setOrdering(false);
     }
@@ -132,6 +146,28 @@ export default function Cart() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      {notice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 className="mb-2 text-xl font-bold text-gray-900">{notice.title}</h3>
+            <p className="mb-6 text-gray-600">{notice.message}</p>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  const onClose = notice.onClose;
+                  setNotice(null);
+                  onClose?.();
+                }}
+                className="rounded bg-pink-600 px-4 py-2 font-semibold text-white hover:bg-pink-700"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Progress Steps */}
       <div className="mb-8">
         <div className="flex justify-between">

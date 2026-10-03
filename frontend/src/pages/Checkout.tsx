@@ -23,6 +23,11 @@ export default function Checkout() {
   const [phone, setPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [notes, setNotes] = useState('');
+  const [notice, setNotice] = useState<{
+    title: string;
+    message: string;
+    onClose?: () => void;
+  } | null>(null);
   const navigate = useNavigate();
 
   // Título da página
@@ -76,7 +81,10 @@ export default function Checkout() {
     e.preventDefault();
     
     if (!address.trim() || !phone.trim()) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+      setNotice({
+        title: 'Campos obrigatórios',
+        message: 'Preencha o endereço de entrega e o telefone para contato antes de confirmar o pedido.'
+      });
       return;
     }
 
@@ -99,11 +107,17 @@ export default function Checkout() {
       // Limpar carrinho após sucesso
       clearCart();
       
-      alert('Pedido realizado com sucesso! Acompanhe o status na aba "Meus Pedidos".');
-      navigate('/');
+      setNotice({
+        title: 'Pedido realizado com sucesso!',
+        message: 'Acompanhe o status do pedido na aba “Meus Pedidos”.',
+        onClose: () => navigate('/')
+      });
     } catch (error) {
       console.error('Erro ao criar pedido:', error);
-      alert('Erro ao processar pedido. Tente novamente.');
+      setNotice({
+        title: 'Erro ao processar pedido',
+        message: 'Não foi possível finalizar o pedido agora. Tente novamente em alguns instantes.'
+      });
     } finally {
       setSubmitting(false);
     }
@@ -141,6 +155,28 @@ export default function Checkout() {
 
   return (
     <div className="container mx-auto px-4 py-8 bg-gray-100 dark:bg-dark-900 min-h-screen transition-colors">
+      {notice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white dark:bg-dark-800 p-6 shadow-xl border dark:border-dark-600">
+            <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">{notice.title}</h3>
+            <p className="mb-6 text-gray-600 dark:text-gray-300">{notice.message}</p>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  const onClose = notice.onClose;
+                  setNotice(null);
+                  onClose?.();
+                }}
+                className="rounded bg-pink-600 px-4 py-2 font-semibold text-white hover:bg-pink-700 transition-colors"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Finalizar Pedido</h1>
         
