@@ -17,10 +17,11 @@ export interface CreateTestNotificationRequest {
 }
 
 class NotificationService {
-  private baseURL = 'http://localhost:8080';
+  private baseURL = import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? '/api' : 'http://localhost:8080');
 
   private getAuthHeader() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (!token) {
       return null; // Retorna null ao invés de lançar erro
     }

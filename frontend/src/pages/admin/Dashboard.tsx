@@ -35,6 +35,19 @@ interface User {
   userType: string;
 }
 
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    pending: 'Pendente',
+    preparing: 'Preparando',
+    ready: 'Pronto',
+    delivering: 'Em entrega',
+    delivered: 'Entregue',
+    cancelled: 'Cancelado'
+  };
+
+  return labels[status] || status;
+};
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'users'>('products');
   const [orderFilterTab, setOrderFilterTab] = useState<'pending' | 'inProgress' | 'completed'>('pending');
@@ -44,6 +57,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
@@ -383,11 +397,7 @@ export default function AdminDashboard() {
                           <td className="px-4 py-2">{new Date(order.createdAt).toLocaleDateString()}</td>
                           <td className="px-4 py-2">
                             <button 
-                              onClick={() => {
-                                alert(`Itens do pedido:\n${order.items?.map(item => 
-                                  `${item.productName} - Qtd: ${item.quantity} - R$ ${item.price}`
-                                ).join('\n') || 'Sem itens'}`);
-                              }}
+                              onClick={() => setSelectedOrder(order)}
                               className="text-blue-600 hover:text-blue-800"
                             >
                               Ver Detalhes
@@ -400,6 +410,82 @@ export default function AdminDashboard() {
                 </table>
               </div>
             )}
+          </div>
+        )}
+
+        {selectedOrder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+            <div className="w-full max-w-2xl rounded-lg bg-white shadow-xl">
+              <div className="flex items-center justify-between border-b px-6 py-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Detalhes do Pedido #{selectedOrder.id}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Cliente: {selectedOrder.userName || `Cliente #${selectedOrder.userId}`}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="rounded-full px-3 py-1 text-2xl leading-none text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  aria-label="Fechar detalhes do pedido"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-4 px-6 py-5">
+                <div className="grid gap-3 rounded-lg bg-gray-50 p-4 text-sm md:grid-cols-3">
+                  <div>
+                    <p className="font-semibold text-gray-500">Status</p>
+                    <p className="font-bold text-gray-900">{getStatusLabel(selectedOrder.status)}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-500">Data</p>
+                    <p className="font-bold text-gray-900">
+                      {new Date(selectedOrder.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-500">Total</p>
+                    <p className="font-bold text-pink-600">R$ {selectedOrder.total.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="mb-3 font-semibold text-gray-900">Itens do pedido</h4>
+                  {selectedOrder.items?.length ? (
+                    <div className="divide-y rounded-lg border">
+                      {selectedOrder.items.map((item) => (
+                        <div key={item.id || item.productId} className="flex items-center justify-between px-4 py-3">
+                          <div>
+                            <p className="font-medium text-gray-900">{item.productName}</p>
+                            <p className="text-sm text-gray-500">Quantidade: {item.quantity}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-gray-900">R$ {(item.price * item.quantity).toFixed(2)}</p>
+                            <p className="text-sm text-gray-500">R$ {item.price.toFixed(2)} cada</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="rounded-lg border px-4 py-3 text-gray-500">Sem itens cadastrados para este pedido.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end border-t px-6 py-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="rounded bg-pink-600 px-4 py-2 font-semibold text-white hover:bg-pink-700"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
