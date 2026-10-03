@@ -39,10 +39,59 @@
       }
     },
     {
-      "source": "/:path*",
+      "source": "/login",
       "destination": {
         "service": "web",
-        "path": "/index.html"
+        "path": "/"
+      }
+    },
+    {
+      "source": "/checkout",
+      "destination": {
+        "service": "web",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/signup/customer",
+      "destination": {
+        "service": "web",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/signup/delivery",
+      "destination": {
+        "service": "web",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/customer/(.*)",
+      "destination": {
+        "service": "web",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/delivery/(.*)",
+      "destination": {
+        "service": "web",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": {
+        "service": "web",
+        "path": "/"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web",
+        "path": "/"
       }
     }
   ]
