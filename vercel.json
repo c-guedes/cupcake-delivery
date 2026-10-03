@@ -42,7 +42,7 @@
       "source": "/(.*)",
       "destination": {
         "service": "web",
-        "path": "/"
+        "path": "/index.html"
       }
     }
   ]
